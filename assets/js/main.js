@@ -381,3 +381,10 @@
     else if (!visible) clearTimeout(timer);
   }, { threshold: 0.35 }).observe(vs);
 })();
+
+/* LinkedIn conversion: Join Waitlist button clicks (sign-ups are tracked in waitlist.js) */
+document.querySelectorAll('a[href*="waitlist.html"]').forEach(function (a) {
+  a.addEventListener('click', function () {
+    if (window.lintrk) { window.lintrk('track', { conversion_id: 31735690 }); }
+  });
+});
