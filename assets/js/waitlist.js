@@ -96,6 +96,7 @@ var WAITLIST_ENDPOINT = '';
     send.then(function () {
       document.getElementById('wl-success-email').textContent = data.email;
       if (window.lintrk) { window.lintrk('track', { conversion_id: 31735682 }); }
+      if (window.fbq) { fbq('track', 'Lead'); }
       if (window.clarity) { clarity('event', 'waitlist_signup'); clarity('set', 'pm_tool', data.pm_tool); clarity('set', 'team_size', data.team_size); }
       form.hidden = true;
       success.hidden = false;

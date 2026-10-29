@@ -386,5 +386,6 @@
 document.querySelectorAll('a[href*="waitlist.html"]').forEach(function (a) {
   a.addEventListener('click', function () {
     if (window.lintrk) { window.lintrk('track', { conversion_id: 31735690 }); }
+    if (window.fbq) { fbq('trackCustom', 'JoinWaitlistClick'); }
   });
 });
