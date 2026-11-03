@@ -522,3 +522,19 @@ a.ticker:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
 @media (max-width: 720px) { a.ticker { display: none; } }
 html, body { overflow-x: clip; }
 .ticker { max-width: 100%; }
+
+/* Hero video */
+.panel.hero-video { height: auto; aspect-ratio: 16 / 9; background: #e9e9ec; }
+.hero-video__el { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-video__play { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; border: 0; padding: 0; background: rgba(16, 24, 38, 0.10); cursor: pointer; transition: background .25s ease; font: inherit; }
+.hero-video__play:hover { background: rgba(16, 24, 38, 0.18); }
+.hero-video__btn { width: 88px; height: 88px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding-left: 4px; color: #101826; background: rgba(255, 255, 255, 0.92); box-shadow: 0 12px 40px rgba(16, 24, 38, 0.22); transition: transform .25s ease; }
+.hero-video__play:hover .hero-video__btn { transform: scale(1.06); }
+.hero-video__label { padding: 8px 14px; border-radius: 999px; background: rgba(16, 24, 38, 0.72); color: #fff; font-size: 15px; font-weight: 500; }
+.hero-video.is-playing .hero-video__play { opacity: 0; pointer-events: none; }
+@media (max-width: 720px) {
+  .panel.hero-video { height: auto; border-radius: 16px; }
+  .hero-video__btn { width: 64px; height: 64px; }
+  .hero-video__btn svg { width: 22px; height: 22px; }
+  .hero-video__label { font-size: 13px; padding: 6px 12px; }
+}

@@ -389,3 +389,31 @@ document.querySelectorAll('a[href*="waitlist.html"]').forEach(function (a) {
     if (window.gsTrack) { gsTrack('JoinWaitlistClick'); }
   });
 });
+
+/* Hero video: muted autoplay loop; play button restarts from 0 with sound */
+(function () {
+  var wrap = document.getElementById('hero-video');
+  if (!wrap) return;
+  var v = wrap.querySelector('video');
+  var btn = wrap.querySelector('.hero-video__play');
+  var small = window.matchMedia('(max-width: 720px)').matches;
+  v.src = small ? v.dataset.srcSm : v.dataset.src;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { v.removeAttribute('autoplay'); }
+  else { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+
+  btn.addEventListener('click', function () {
+    v.loop = false;
+    v.muted = false;
+    v.currentTime = 0;
+    v.controls = true;
+    var p = v.play(); if (p && p.catch) p.catch(function () {});
+    wrap.classList.add('is-playing');
+    try { if (window.clarity) window.clarity('event', 'hero_video_play'); } catch (e) {}
+  });
+  v.addEventListener('ended', function () {
+    v.controls = false; v.muted = true; v.loop = true;
+    wrap.classList.remove('is-playing');
+    var p = v.play(); if (p && p.catch) p.catch(function () {});
+  });
+})();
