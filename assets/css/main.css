@@ -540,12 +540,14 @@ html, body { overflow-x: clip; }
 }
 
 /* Compare block: desktop (web) pairs switch the phone frames to browser frames */
-.vs__phone { transition: width .5s cubic-bezier(.2,.7,.2,1), border-radius .5s ease; }
+/* The stage height is locked (JS sets it from the phone layout), so switching pairs never resizes the block */
+.vs__stage { box-sizing: border-box; }
 .vs--desk .vs__phone { width: 460px; aspect-ratio: 1440 / 1024; border-radius: 14px; }
 .vs--desk .vs__vs { margin: 0 28px; align-self: center; }
 @media (max-width: 1100px) { .vs--desk .vs__phone { width: 34vw; } }
 @media (max-width: 720px) {
-  .vs--desk .vs__stage { flex-direction: column; gap: 14px; }
-  .vs--desk .vs__phone { width: calc(100vw - 96px); max-width: 420px; border-radius: 10px; }
+  .vs--desk .vs__stage { flex-direction: column; gap: 6px; }
+  .vs--desk .vs__col { gap: 6px; }
+  .vs--desk .vs__phone { width: auto; max-width: none; height: calc((var(--vs-in, 340px) - 2 * 30px - 24px - 12px) / 2); border-radius: 8px; border-width: 3px; }
   .vs--desk .vs__vs { margin: 0; }
 }

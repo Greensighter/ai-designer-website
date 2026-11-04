@@ -351,6 +351,17 @@
   var startedAt = 0, remaining = MS;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   bar.style.setProperty('--vs-ms', MS + 'ms');
+  var stage = vs.querySelector('.vs__stage');
+  function lockH() {                     // keep the block at its phone-layout height for every pair
+    var desk = vs.classList.contains('vs--desk');
+    stage.style.height = ''; vs.classList.remove('vs--desk');
+    var h = stage.offsetHeight, cs = getComputedStyle(stage);
+    if (desk) vs.classList.add('vs--desk');
+    stage.style.height = h + 'px';
+    stage.style.setProperty('--vs-in', (h - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)) + 'px');
+  }
+  lockH();
+  var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(lockH, 120); });
   function show(k) {
     i = (k + n) % n;
     cols.forEach(function (c) { c.querySelectorAll('.vs__shot').forEach(function (s, j) { s.classList.toggle('is-on', j === i); }); });
