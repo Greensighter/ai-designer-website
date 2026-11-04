@@ -560,3 +560,8 @@ html, body { overflow-x: clip; }
 .vs__dots button:focus-visible { outline: none; }
 .vs__dots button:focus-visible::before { box-shadow: 0 0 0 2px var(--ink); }
 @media (max-width: 720px) { .vs__dots { --bar-h: 2.5px; } .vs__dots button { height: 32px; margin: -14.75px 0; } }
+
+/* Compare: switch pairs with a plain fade of the whole frame (border included), no scale */
+.vs__shot, .vs__shot.is-on { transform: none; transition: none; }
+.vs__phone { transition: opacity .28s ease; }
+.vs--fade .vs__phone { opacity: 0; }

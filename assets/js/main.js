@@ -362,10 +362,21 @@
   }
   lockH();
   var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(lockH, 120); });
+  var fadeT;
   function show(k) {
+    var prev = i;
     i = (k + n) % n;
-    cols.forEach(function (c) { c.querySelectorAll('.vs__shot').forEach(function (s, j) { s.classList.toggle('is-on', j === i); }); });
-    vs.classList.toggle('vs--desk', dots[i] && dots[i].dataset.kind === 'd');
+    var to = i;
+    function swap() {
+      cols.forEach(function (c) { c.querySelectorAll('.vs__shot').forEach(function (s, j) { s.classList.toggle('is-on', j === to); }); });
+      vs.classList.toggle('vs--desk', dots[to] && dots[to].dataset.kind === 'd');
+    }
+    clearTimeout(fadeT);
+    if (to === prev || reduce) { swap(); vs.classList.remove('vs--fade'); }
+    else {                               // fade the whole frame out, swap the screen, fade back in
+      vs.classList.add('vs--fade');
+      fadeT = setTimeout(function () { swap(); requestAnimationFrame(function () { vs.classList.remove('vs--fade'); }); }, 280);
+    }
     dots.forEach(function (d, j) {
       d.classList.remove('is-on'); void d.offsetWidth;
       d.classList.toggle('is-on', j === i); d.classList.toggle('is-done', j < i);
