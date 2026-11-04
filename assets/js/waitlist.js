@@ -15,15 +15,36 @@ var WAITLIST_ENDPOINT = '';
   var status = form.querySelector('.wl-form__status');
   var submit = form.querySelector('.wl-submit');
 
+  // Personal mailbox providers: not accepted for the work email or the company website
+  var FREE = ('gmail.com googlemail.com yahoo.com ymail.com rocketmail.com outlook.com hotmail.com live.com msn.com '
+    + 'icloud.com me.com mac.com aol.com proton.me protonmail.com pm.me gmx.com gmx.net gmx.de web.de mail.com '
+    + 'yandex.com yandex.ru ya.ru mail.ru inbox.ru list.ru bk.ru rambler.ru zoho.com zohomail.com tutanota.com tuta.io '
+    + 'fastmail.com hey.com qq.com 163.com 126.com sina.com naver.com daum.net hanmail.net seznam.cz wp.pl o2.pl '
+    + 'libero.it virgilio.it orange.fr laposte.net free.fr wanadoo.fr t-online.de freenet.de btinternet.com '
+    + 'sky.com comcast.net verizon.net att.net sbcglobal.net cox.net shaw.ca rogers.com bigpond.com '
+    + 'rediffmail.com mailinator.com guerrillamail.com 10minutemail.com temp-mail.org yopmail.com').split(' ');
+  var SOCIAL = 'linkedin.com facebook.com instagram.com x.com twitter.com t.me github.com behance.net dribbble.com medium.com notion.site'.split(' ');
+  function base(h) { h = h.replace(/^www\./, ''); return h; }
+  function inList(h, list) { h = base(h); return list.some(function (d) { return h === d || h.slice(-(d.length + 1)) === '.' + d; }); }
+  function isFree(h) { return inList(h, FREE) || /^(yahoo|hotmail|outlook|live|gmx|aol)\.[a-z.]{2,6}$/.test(base(h)); }
+  function isSocial(h) { return inList(h, SOCIAL); }
+
   var rules = {
     first_name: function (v) { return v.trim().length > 0; },
     last_name: function (v) { return v.trim().length > 0; },
-    email: function (v) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim()); },
+    email: function (v) {
+      v = v.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) return false;
+      return isFree(v.split('@')[1]) ? 'Please use your work email, not a personal one (Gmail, Yahoo…).' : true;
+    },
     website: function (v) {
       v = v.trim();
       if (!v) return false;
       if (!/^https?:\/\//i.test(v)) v = 'https://' + v;
-      try { var u = new URL(v); return u.hostname.indexOf('.') > 0; } catch (e) { return false; }
+      var h;
+      try { h = new URL(v).hostname.toLowerCase(); } catch (e) { return false; }
+      if (h.indexOf('.') < 1) return false;
+      return isFree(h) || isSocial(h) ? 'Please enter your company’s own website.' : true;
     },
     team_size: function (v) { return !!v; },
     pm_tool: function (v) { return !!v; },
@@ -31,9 +52,13 @@ var WAITLIST_ENDPOINT = '';
   };
 
   function check(input) {
-    var ok = rules[input.name](input.value);
+    var res = rules[input.name](input.value), ok = res === true;
     var field = input.closest('.field');
     var err = field.querySelector('.field__err');
+    if (err) {                           // a rule can return its own message; otherwise show the default one
+      if (!err.dataset.msg) err.dataset.msg = err.textContent;
+      err.textContent = typeof res === 'string' ? res : err.dataset.msg;
+    }
     field.classList.toggle('is-invalid', !ok);
     input.setAttribute('aria-invalid', ok ? 'false' : 'true');
     if (err) {
