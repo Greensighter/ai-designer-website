@@ -565,3 +565,14 @@ html, body { overflow-x: clip; }
 .vs__shot, .vs__shot.is-on { transform: none; transition: none; }
 .vs__phone { transition: opacity .28s ease; }
 .vs--fade .vs__phone { opacity: 0; }
+
+/* Hero: offer headline ("Get … free"), highlight chips and description */
+.h1--offer { max-width: 15ch; text-align: center; display: block; }
+.h1--offer .h1__new { display: block; }
+.h1__hl { color: #2F8A5B; }
+.hero-chips { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+.hero-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; background: var(--surface); color: var(--text); font-size: 16px; font-weight: 500; line-height: 1.3; }
+.hero-chip svg { flex: none; }
+.hero__desc { max-width: 560px; margin: 0; font-size: 17px; line-height: 1.55; color: #7A7A7A; text-align: center; }
+@media (min-width: 900px) { .h1--offer { max-width: none; } }
+@media (max-width: 720px) { .h1__br { display: none; } .hero-chips { gap: 6px; } .hero-chip { font-size: 13px; padding: 6px 10px; gap: 6px; } .hero-chip svg { width: 15px; height: 15px; } .hero__desc { font-size: 15px; } }
