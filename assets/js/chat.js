@@ -56,15 +56,14 @@ var WAITLIST_ENDPOINT = '';
       show: function () { return S.email; } },
     { key: 'name', label: 'Name', type: 'text', autocomplete: 'name', icon: 'user',
       ask: function () { return 'Welcome! I’ll get your demo set up in under a minute. What’s your name?'; },
-      placeholder: 'First and last name',
+      placeholder: 'Your name',
       validate: function (v) {
         var p = v.trim().split(/\s+/).filter(Boolean);
         if (!p.length) return 'What should I call you?';
-        if (p.length < 2) return 'Thanks! Could you add your last name too?';
         return true;
       },
       store: function (v) { var p = v.trim().split(/\s+/); S.first_name = cap(p.shift()); S.last_name = p.map(cap).join(' '); },
-      show: function () { return S.first_name + ' ' + S.last_name; } },
+      show: function () { return (S.first_name + ' ' + S.last_name).trim(); } },
     { key: 'website', label: 'Website', type: 'url', autocomplete: 'url', icon: 'globe',
       ask: function () { return 'Nice to meet you, ' + S.first_name + '. What’s your company website?'; },
       placeholder: 'yourcompany.com',
