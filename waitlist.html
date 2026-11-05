@@ -4,27 +4,27 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
-<title>Join the waitlist | Greensighter AI UI/UX Designer</title>
-<meta name="description" content="Join the founding teams getting early access to your AI UI/UX Designer.">
+<title>Book a demo | Greensighter AI Product Designer</title>
+<meta name="description" content="Tell our onboarding agent about your team and book a demo of your AI Product Designer.">
 <link rel="canonical" href="https://ai.greensighter.com/waitlist">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Greensighter">
 <meta property="og:url" content="https://ai.greensighter.com/waitlist">
-<meta property="og:title" content="Join the waitlist | Greensighter AI UI/UX Designer">
-<meta property="og:description" content="Join the founding teams getting early access to your AI UI/UX Designer.">
+<meta property="og:title" content="Book a demo | Greensighter AI Product Designer">
+<meta property="og:description" content="Tell our onboarding agent about your team and book a demo of your AI Product Designer.">
 <meta property="og:image" content="https://ai.greensighter.com/assets/img/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Greensighter: Hire AI UI/UX Designer">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Join the waitlist | Greensighter AI UI/UX Designer">
-<meta name="twitter:description" content="Join the founding teams getting early access to your AI UI/UX Designer.">
+<meta name="twitter:title" content="Book a demo | Greensighter AI Product Designer">
+<meta name="twitter:description" content="Tell our onboarding agent about your team and book a demo of your AI Product Designer.">
 <meta name="twitter:image" content="https://ai.greensighter.com/assets/img/og-image.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/main.css?v=1793257407">
-<link rel="stylesheet" href="assets/css/waitlist.css?v=1793257407">
+<link rel="stylesheet" href="assets/css/chat.css?v=1794000000">
 <!-- Microsoft Clarity -->
 <script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -63,134 +63,49 @@
     <!-- End Meta Pixel Code -->
     <script src="assets/js/track.js?v=1" defer></script>
 </head>
-<body class="wl-page">
+<body class="chat-page">
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1083937427973647&ev=PageView&noscript=1" /></noscript>
 <noscript><img height="1" width="1" style="display:none;" alt="" src="https://px.ads.linkedin.com/collect/?pid=9941026&fmt=gif" /></noscript>
 
-  <main class="wl-main">
-    <div class="wl-brand">
-      <a class="logo" href="index.html" aria-label="Greensighter home">
-      <span class="logo__mark"><img src="assets/img/logo-mark.svg" width="22" height="9" alt=""></span>
-      <img src="assets/img/logo-wordmark.svg" width="120" height="19" alt="">
-    </a>
-      <span class="wl-brand__sep" aria-hidden="true"></span>
-      <p class="wl-brand__mail">Prefer direct mail?<a href="mailto:hello@greensighter.com">hello@greensighter.com</a></p>
-    </div>
-    <section class="wl-intro" aria-labelledby="wl-title">
-      <div class="wl-intro__body">
-        <h1 class="wl-title" id="wl-title">Your next designer.<br>Worth the wait.</h1>
-        <p class="wl-lead">Join the waitlist for your AI UI/UX Designer. We’re inviting a small group of founding teams to help shape what comes next.</p>
+<!-- Netlify detects this form at deploy time; the chat posts the same fields to it -->
+<form name="waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" hidden>
+  <input type="hidden" name="form-name" value="waitlist">
+  <input name="subject"><input name="bot-field"><input name="first_name"><input name="last_name"><input name="email">
+  <input name="website"><input name="team_size"><input name="pm_tool"><input name="designers">
+</form>
 
-        <div class="wl-offer">
-          <span class="wl-offer__num">10</span>
-          <div><strong>Start with 10 free tickets</strong><span>For founding teams, once invited and onboarded.</span></div>
-        </div>
-      </div>
-    </section>
+<header class="ct-top">
+  <a class="logo" href="index.html" aria-label="Greensighter home">
+    <span class="logo__mark"><img src="assets/img/logo-mark.svg" width="22" height="9" alt=""></span>
+    <img src="assets/img/logo-wordmark.svg" width="120" height="19" alt="">
+  </a>
+  <span class="ct-status"><i aria-hidden="true"></i>Onboarding agent · online</span>
+  <a class="ct-mail" href="mailto:hello@greensighter.com">hello@greensighter.com</a>
+</header>
 
-    <section class="wl-card" aria-labelledby="wl-form-title">
-      <form class="wl-form" id="wl-form" name="waitlist" method="POST" data-netlify="true" netlify-honeypot="bot-field" novalidate>
-        <input type="hidden" name="form-name" value="waitlist">
-        <input type="hidden" name="subject" value="New waitlist sign-up: AI UI/UX Designer">
-        <p hidden><label>Leave this empty <input name="bot-field"></label></p>
-        <h2 class="wl-card__title" id="wl-form-title">Join the waitlist</h2>
-        <p class="wl-card__sub">Tell us a little about your team. All fields are required.</p>
+<main class="ct" id="ct">
+  <div class="ct-progress" id="ct-progress" hidden>
+    <div class="ct-progress__head"><span>Your setup</span><span id="ct-count">0 of 6</span></div>
+    <div class="ct-progress__bar" id="ct-bar"></div>
+    <div class="ct-pills" id="ct-pills"></div>
+  </div>
 
-        <div class="field-row">
-          <div class="field">
-            <label for="f-first">First name</label>
-            <input id="f-first" name="first_name" type="text" autocomplete="given-name" placeholder="First name" required>
-            <p class="field__err" id="f-first-err" hidden>Please enter your first name.</p>
-          </div>
-          <div class="field">
-            <label for="f-last">Last name</label>
-            <input id="f-last" name="last_name" type="text" autocomplete="family-name" placeholder="Last name" required>
-            <p class="field__err" id="f-last-err" hidden>Please enter your last name.</p>
-          </div>
-        </div>
-        <div class="field">
-          <label for="f-email">Work email</label>
-          <input id="f-email" name="email" type="email" autocomplete="email" placeholder="you@company.com" required>
-          <p class="field__err" id="f-email-err" hidden>Please enter a valid work email.</p>
-        </div>
-        <div class="field">
-          <label for="f-site">Company website</label>
-          <input id="f-site" name="website" type="url" inputmode="url" autocomplete="url" placeholder="yourcompany.com" required>
-          <p class="field__err" id="f-site-err" hidden>Please enter your company website.</p>
-        </div>
-        <div class="field">
-          <label for="f-size">Team size</label>
-          <div class="select">
-            <select id="f-size" name="team_size" required>
-              <option value="" selected disabled>Select team size</option>
-              <option>1–10</option>
-              <option>11–50</option>
-              <option>51–200</option>
-              <option>200+</option>
-            </select>
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <p class="field__err" id="f-size-err" hidden>Please choose your team size.</p>
-        </div>
-        <div class="field">
-          <label for="f-tool">Project management tool</label>
-          <div class="select">
-            <select id="f-tool" name="pm_tool" required>
-              <option value="" selected disabled>Select your tool</option>
-              <option>Jira</option>
-              <option>Linear</option>
-              <option>Asana</option>
-              <option>ClickUp</option>
-              <option>Monday.com</option>
-              <option>Trello</option>
-              <option>Notion</option>
-              <option>GitHub Projects</option>
-              <option>Azure DevOps</option>
-              <option>Other</option>
-            </select>
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <p class="field__err" id="f-tool-err" hidden>Please choose your project management tool.</p>
-        </div>
-        <div class="field">
-          <label for="f-designers">Number of designers in company</label>
-          <div class="select">
-            <select id="f-designers" name="designers" required>
-              <option value="" selected disabled>Select number of designers</option>
-              <option>None yet</option>
-              <option>1</option>
-              <option>2–5</option>
-              <option>6–10</option>
-              <option>11+</option>
-            </select>
-            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </div>
-          <p class="field__err" id="f-designers-err" hidden>Please choose the number of designers.</p>
-        </div>
+  <section class="ct-intro" id="ct-intro">
+    <span class="ct-orb" aria-hidden="true"><img src="assets/img/logo-mark.svg" alt=""></span>
+    <h1 class="ct-intro__title">Let’s book your demo.</h1>
+    <p class="ct-intro__sub">I’m Greensighter’s onboarding agent. Start with your work email and I’ll take it from there.</p>
+  </section>
 
-        <button class="wl-submit" type="submit">Join Waitlist</button>
-        <p class="wl-form__status" role="alert" hidden></p>
-        <p class="wl-legal">By joining, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
-      </form>
+  <div class="ct-log" id="ct-log" role="log" aria-live="polite"></div>
 
-      <div class="wl-success" id="wl-success" hidden tabindex="-1">
-        <span class="wl-success__ic"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 20 20" fill="none"><path d="M5 10.5l3.2 3.2L15 7" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-        <h2 class="wl-card__title">You’re on the list</h2>
-        <p class="wl-card__sub">We’ll email <strong id="wl-success-email">you</strong> as soon as a founding-team spot opens.</p>
-        <a class="wl-success__back" href="index.html">Back to Greensighter</a>
-      </div>
-    </section>
-  </main>
+  <form class="ct-composer" id="ct-composer" autocomplete="on" novalidate>
+    <label class="sr-only" for="ct-input">Your answer</label>
+    <input id="ct-input" name="ct" type="email" autocomplete="email" placeholder="you@company.com" enterkeyhint="send">
+    <button type="submit" class="ct-send" aria-label="Send"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+  </form>
+  <p class="ct-legal" id="ct-legal">By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+</main>
 
-  <footer class="wl-footer">
-    <ul class="wl-assure">
-      <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#000"/><path d="M6 10.3l2.6 2.6L14 7.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Only 20 founding spots</span></li>
-      <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#000"/><path d="M6 10.3l2.6 2.6L14 7.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>We’ll sign an NDA before onboarding</span></li>
-      <li><svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="10" fill="#000"/><path d="M6 10.3l2.6 2.6L14 7.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Every screen reviewed by a senior designer</span></li>
-    </ul>
-    <p class="wl-faq">Have questions? <a href="index.html#faq">Check our FAQ</a></p>
-  </footer>
-
-<script src="assets/js/waitlist.js?v=1793940000" defer></script>
+<script src="assets/js/chat.js?v=1794000000" defer></script>
 </body>
 </html>
