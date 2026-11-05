@@ -336,22 +336,57 @@ var WAITLIST_ENDPOINT = '';
   }
 
   /* ---------- sending + final moment ---------- */
+  /* ---------- sending ---------- */
+  var completed = false, partialSent = '';
+  function payload(status) {
+    var d = { status: status, first_name: S.first_name || '', last_name: S.last_name || '', email: S.email || '', website: S.website || '', team_size: S.team_size || '', pm_tool: S.pm_tool || '', designers: S.designers || '' };
+    d.answered = STEPS.filter(function (s) { return answeredKey(s.key); }).map(function (s) { return s.label; }).join(', ');
+    return d;
+  }
+  function onNetlify() { var h = location.hostname; return /(^|\.)greensighter\.com$/.test(h) || /\.netlify\.app$/.test(h); }
+  function formBody(data, subject) {
+    var body = new URLSearchParams({ 'form-name': 'waitlist', 'subject': subject, 'bot-field': '' });
+    Object.keys(data).forEach(function (k) { body.append(k, data[k]); });
+    return body;
+  }
+
   function send() {
-    var data = { first_name: S.first_name, last_name: S.last_name, email: S.email, website: S.website, team_size: S.team_size, pm_tool: S.pm_tool, designers: S.designers };
-    var host = location.hostname;
-    var onNetlify = /(^|\.)greensighter\.com$/.test(host) || /\.netlify\.app$/.test(host);
+    var data = payload('complete');
     if (WAITLIST_ENDPOINT) {
       return fetch(WAITLIST_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }, body: JSON.stringify(Object.assign({ source: 'landing-demo-chat' }, data)) })
         .then(function (r) { if (!r.ok) throw new Error('Request failed'); });
     }
-    if (onNetlify) {
-      var body = new URLSearchParams({ 'form-name': 'waitlist', 'subject': 'New demo request: AI Product Designer', 'bot-field': '' });
-      Object.keys(data).forEach(function (k) { body.append(k, data[k]); });
-      return fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() })
+    if (onNetlify()) {
+      return fetch('/', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: formBody(data, 'New demo request: AI Product Designer').toString() })
         .then(function (r) { if (!r.ok) throw new Error('Request failed'); });
     }
     return new Promise(function (r) { setTimeout(r, 400); });
   }
+
+  /* Left halfway: send whatever was answered so far (email at minimum).
+     Sent when the page is hidden or closed; re-sent only if new answers were added since. */
+  function sendPartial() {
+    if (completed || !S.email) return;
+    var data = payload('partial');
+    var snap = JSON.stringify(data);
+    if (snap === partialSent) return;
+    partialSent = snap;
+    var subject = 'Unfinished demo request (' + data.answered + ')';
+    if (WAITLIST_ENDPOINT) {
+      var json = JSON.stringify(Object.assign({ source: 'landing-demo-chat' }, data));
+      if (!(navigator.sendBeacon && navigator.sendBeacon(WAITLIST_ENDPOINT, new Blob([json], { type: 'application/json' }))))
+        fetch(WAITLIST_ENDPOINT, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json' }, body: json }).catch(function () {});
+    } else if (onNetlify()) {
+      var body = formBody(data, subject);
+      if (!(navigator.sendBeacon && navigator.sendBeacon('/', body)))
+        fetch('/', { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body.toString() }).catch(function () {});
+    } else if (window.console) {
+      console.info('[demo chat] partial (not sent outside Netlify):', data);
+    }
+    if (window.clarity) clarity('event', 'demo_chat_partial');
+  }
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') sendPartial(); });
+  window.addEventListener('pagehide', sendPartial);
 
   function submit() {
     locked = true;
@@ -366,6 +401,7 @@ var WAITLIST_ENDPOINT = '';
   }
 
   function done() {
+    completed = true;
     if (window.lintrk) { window.lintrk('track', { conversion_id: 31735682 }); }
     if (window.gsTrack) { gsTrack('Lead', { email: S.email, first_name: S.first_name, last_name: S.last_name }, { content_name: 'AI Designer demo' }); }
     if (window.clarity) { clarity('event', 'waitlist_signup'); clarity('set', 'pm_tool', S.pm_tool); clarity('set', 'team_size', S.team_size); }
