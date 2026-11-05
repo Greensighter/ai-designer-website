@@ -154,3 +154,7 @@
 @media (prefers-reduced-motion: reduce) {
   .chat-page *, .chat-page *::before { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+/* Saving state (replaces the step checklist) */
+.ct-saving { display: inline-flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px; background: var(--ct-soft); font-size: 15px; color: var(--black); }
+.ct-saving b { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--ct-p); border-right-color: transparent; animation: ct-spin .8s linear infinite; }

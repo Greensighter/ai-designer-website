@@ -359,21 +359,11 @@ var WAITLIST_ENDPOINT = '';
     renderProgress(true);
     composer.setAttribute('aria-disabled', 'true');
     input.placeholder = 'Setting things up…';
-    var domain = base(hostOf(S.website));
-    var tasks = ['Saving your details', 'Looking at ' + domain, 'Mapping ' + (S.pm_tool === 'Other' ? 'your ticket tool' : S.pm_tool) + ' → Figma', 'Reserving your demo slot'];
-    return say('Perfect. Setting up your demo…', { fast: true }).then(function (m) {
-      var box = el('div', 'ct-build', '<div class="ct-build__head"><span>Preparing your demo</span><span class="ct-build__n">0/' + tasks.length + '</span></div><div class="ct-build__bar"><i></i></div><ul>' + tasks.map(function (t) { return '<li><b></b>' + esc(t) + '</li>'; }).join('') + '</ul>');
-      m.appendChild(box); scroll();
-      var items = box.querySelectorAll('li'), bar = box.querySelector('.ct-build__bar i'), n = box.querySelector('.ct-build__n');
-      var sending = send();
-      var chain = Promise.resolve();
-      Array.prototype.forEach.call(items, function (li, k) {
-        chain = chain.then(function () { li.classList.add('is-run'); return wait(k === items.length - 1 ? 300 : 700); })
-          .then(function () { return k === items.length - 1 ? sending : null; })
-          .then(function () { li.classList.remove('is-run'); li.classList.add('is-ok'); bar.style.width = ((k + 1) / items.length * 100) + '%'; n.textContent = (k + 1) + '/' + items.length; });
-      });
-      return chain.then(done, fail);
-    });
+    lastAgent = null;
+    var m = agentMsg(false);
+    var row = el('div', 'ct-saving', '<b aria-hidden="true"></b>Saving your details…');
+    m.appendChild(row); scroll();
+    return Promise.all([send(), wait(900)]).then(function () { m.remove(); lastAgent = null; return done(); }, function () { m.remove(); lastAgent = null; return fail(); });
   }
 
   function done() {
