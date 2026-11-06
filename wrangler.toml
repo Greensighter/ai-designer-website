@@ -1,0 +1,18 @@
+# Cloudflare Pages config for ai.greensighter.com
+name = "ai-designer-website"
+pages_build_output_dir = "./"
+compatibility_date = "2026-10-15"
+
+[vars]
+# Who receives demo requests (comma-separated)
+LEAD_EMAILS = "aram@greensighter.com,david@greensighter.com"
+# Sender; greensighter.com is already verified in Resend
+LEAD_FROM = "Greensighter AI Designer <leads@greensighter.com>"
+
+# Backup copy of every lead (also visible in the Cloudflare dashboard under KV)
+[[kv_namespaces]]
+binding = "LEADS"
+id = "d701bfac588b418387de8b51bfd93eeb"
+
+# Secret, set in the dashboard (Settings > Variables and secrets), never in git:
+#   RESEND_API_KEY

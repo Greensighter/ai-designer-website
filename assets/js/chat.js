@@ -5,7 +5,10 @@
  * card, then sent to Netlify Forms (form name "waitlist") exactly as before.
  * On other hosts (local file, preview links) sending is simulated.
  */
-var WAITLIST_ENDPOINT = '';
+/* Cloudflare Pages: leads go to the /api/lead function (functions/api/lead.js),
+ * which emails the team and keeps a copy in KV. Elsewhere (local file, previews)
+ * sending is simulated. */
+var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.hostname) ? '/api/lead' : '';
 
 (function () {
   var page = document.body;
@@ -343,7 +346,7 @@ var WAITLIST_ENDPOINT = '';
     d.answered = STEPS.filter(function (s) { return answeredKey(s.key); }).map(function (s) { return s.label; }).join(', ');
     return d;
   }
-  function onNetlify() { var h = location.hostname; return /(^|\.)greensighter\.com$/.test(h) || /\.netlify\.app$/.test(h); }
+  function onNetlify() { return /\.netlify\.app$/.test(location.hostname); }
   function formBody(data, subject) {
     var body = new URLSearchParams({ 'form-name': 'waitlist', 'subject': subject, 'bot-field': '' });
     Object.keys(data).forEach(function (k) { body.append(k, data[k]); });
