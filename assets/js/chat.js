@@ -60,7 +60,7 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
       show: function () { return S.email; } },
     { key: 'name', label: 'Name', type: 'text', autocomplete: 'name', icon: 'user',
       ask: function () { return 'Welcome! I’ll get your demo set up in under a minute. What’s your name?'; },
-      placeholder: 'Your name',
+      placeholder: 'Your First and Last Name',
       validate: function (v) {
         var p = v.trim().split(/\s+/).filter(Boolean);
         if (!p.length) return 'What should I call you?';
