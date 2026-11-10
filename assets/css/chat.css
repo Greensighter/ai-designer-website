@@ -1,6 +1,6 @@
 /* Greensighter: chat-style demo booking (uses tokens from main.css) */
 
-.chat-page { --ct-w: 680px; --ct-p: #6B56F0; --ct-soft: #F3F3F4; --ct-muted: #8A8A8A;
+.chat-page { --ct-w: 820px; --ct-p: #6B56F0; --ct-soft: #F3F3F4; --ct-muted: #8A8A8A;
   min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; background: #FAFAFA; }
 
 /* Top bar */
