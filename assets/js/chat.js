@@ -1,13 +1,14 @@
 /* Greensighter: chat-style demo booking.
  *
  * The onboarding agent asks the same questions as the old form, one at a time.
- * Answers are pinned to the top as pills (click to edit), reviewed in a summary
- * card, then sent to Netlify Forms (form name "waitlist") exactly as before.
+ * Answers are pinned to the top as pills (click to edit). After the last answer the
+ * request is sent right away (no review step) and a link to book the call is shown.
  * On other hosts (local file, preview links) sending is simulated.
  */
 /* Cloudflare Pages: leads go to the /api/lead function (functions/api/lead.js),
  * which emails the team and keeps a copy in KV. Elsewhere (local file, previews)
  * sending is simulated. */
+var BOOKING_URL = 'https://cal.com/david-karapetyan/30min';
 var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.hostname) ? '/api/lead' : '';
 
 (function () {
@@ -148,7 +149,7 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
   function renderProgress(done) {
     progress.hidden = false;
     var answered = STEPS.filter(function (s) { return s.show && answeredKey(s.key); });
-    countEl.textContent = done ? 'Final step · review' : answered.length + ' of ' + STEPS.length + ' answered';
+    countEl.textContent = done ? 'All answered' : answered.length + ' of ' + STEPS.length + ' answered';
     barEl.innerHTML = STEPS.map(function (s) { return '<i class="' + (answeredKey(s.key) ? 'on' : '') + '"></i>'; }).join('');
     barEl.classList.toggle('done', !!done);
     pillsEl.innerHTML = '';
@@ -273,7 +274,7 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
   function run(from) {
     var i = from;
     function go() {
-      if (i >= STEPS.length) return review();
+      if (i >= STEPS.length) return submit();
       return runStep(STEPS[i]).then(function (r) {
         if (r && r.jump) return edit(r.jump).then(go);
         i++;
@@ -409,15 +410,19 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
     if (window.gsTrack) { gsTrack('Lead', { email: S.email, first_name: S.first_name, last_name: S.last_name }, { content_name: 'AI Designer demo' }); }
     if (window.clarity) { clarity('event', 'waitlist_signup'); clarity('set', 'pm_tool', S.pm_tool); clarity('set', 'team_size', S.team_size); }
     var tool = S.pm_tool === 'Other' ? 'Your tickets' : S.pm_tool;
+    var name = [S.first_name, S.last_name].filter(Boolean).join(' ');
+    var book = BOOKING_URL + '?' + new URLSearchParams({ name: name, email: S.email || '' }).toString();
     return say('You’re all set, ' + esc(S.first_name) + '.', { fast: true }).then(function (m) {
       var card = el('div', 'ct-result',
         '<div class="ct-result__top"><span class="ct-result__tag">Demo requested</span>' +
         '<h2 class="ct-result__title">Your AI Product Designer for ' + esc(base(hostOf(S.website))) + '</h2>' +
         '<div class="ct-flow"><span>' + esc(tool) + '</span><em>→</em><span>AI Designer</span><em>→</em><span>Senior review</span><em>→</em><span>Figma</span></div></div>' +
-        '<ol class="ct-steps"><li><span><strong>We email you</strong>at ' + esc(S.email) + ' to pick a time</span></li><li><span><strong>Live demo</strong>on a ticket from your product</span></li><li><span><strong>Onboarding</strong>2–3 days to learn your product</span></li></ol>' +
+        '<a class="ct-book" href="' + esc(book) + '" target="_blank" rel="noopener">Book your 30-min call<span aria-hidden="true">→</span></a>' +
+        '<ol class="ct-steps"><li><span><strong>Book a call</strong>pick a time that suits you</span></li><li><span><strong>Live demo</strong>on a ticket from your product</span></li><li><span><strong>Onboarding</strong>2–3 days to learn your product</span></li></ol>' +
         '<div class="ct-result__foot"><span>Questions? hello@greensighter.com</span><a href="index.html">Back to Greensighter</a></div>');
       m.appendChild(card); scroll();
       input.placeholder = 'Demo requested ✓';
+      if (window.clarity) m.querySelector('.ct-book').addEventListener('click', function () { clarity('event', 'demo_book_click'); });
     });
   }
 
@@ -425,9 +430,9 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
     locked = false;
     composer.removeAttribute('aria-disabled');
     renderProgress(true);
-    return say('Something went wrong on our side. Reply “looks good” to try again, or email hello@greensighter.com.', { err: true }).then(function () {
+    return say('Something went wrong on our side. Reply “try again” to resend, or email hello@greensighter.com.', { err: true }).then(function () {
       setComposer(null);
-      return next().then(function (r) { if (r.jump) return edit(r.jump).then(review); userSay(r.text); return submit(); });
+      return next().then(function (r) { if (r.jump) return edit(r.jump).then(submit); userSay(r.text); return submit(); });
     });
   }
 
