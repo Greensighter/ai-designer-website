@@ -414,7 +414,9 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
       var box = el('div', 'ct-cal');
       box.id = 'ct-cal';
       box.innerHTML = '<div class="ct-cal__loading"><b aria-hidden="true"></b>Loading calendar…</div>';
-      m.appendChild(box); scroll();
+      m.appendChild(box);
+      page.classList.add('is-booking');   /* calendar takes over: hide progress header + composer */
+      scroll();
       input.placeholder = 'Demo requested ✓';
       embedCal(box, name);
     });
