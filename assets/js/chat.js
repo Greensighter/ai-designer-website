@@ -409,21 +409,34 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
     if (window.lintrk) { window.lintrk('track', { conversion_id: 31735682 }); }
     if (window.gsTrack) { gsTrack('Lead', { email: S.email, first_name: S.first_name, last_name: S.last_name }, { content_name: 'AI Designer demo' }); }
     if (window.clarity) { clarity('event', 'waitlist_signup'); clarity('set', 'pm_tool', S.pm_tool); clarity('set', 'team_size', S.team_size); }
-    var tool = S.pm_tool === 'Other' ? 'Your tickets' : S.pm_tool;
     var name = [S.first_name, S.last_name].filter(Boolean).join(' ');
-    var book = BOOKING_URL + '?' + new URLSearchParams({ name: name, email: S.email || '' }).toString();
-    return say('You’re all set, ' + esc(S.first_name) + '.', { fast: true }).then(function (m) {
-      var card = el('div', 'ct-result',
-        '<div class="ct-result__top"><span class="ct-result__tag">Demo requested</span>' +
-        '<h2 class="ct-result__title">Your AI Product Designer for ' + esc(base(hostOf(S.website))) + '</h2>' +
-        '<div class="ct-flow"><span>' + esc(tool) + '</span><em>→</em><span>AI Designer</span><em>→</em><span>Senior review</span><em>→</em><span>Figma</span></div></div>' +
-        '<a class="ct-book" href="' + esc(book) + '" target="_blank" rel="noopener">Book your 30-min call<span aria-hidden="true">→</span></a>' +
-        '<ol class="ct-steps"><li><span><strong>Book a call</strong>pick a time that suits you</span></li><li><span><strong>Live demo</strong>on a ticket from your product</span></li><li><span><strong>Onboarding</strong>2–3 days to learn your product</span></li></ol>' +
-        '<div class="ct-result__foot"><span>Questions? hello@greensighter.com</span><a href="index.html">Back to Greensighter</a></div>');
-      m.appendChild(card); scroll();
+    return say('You’re all set, ' + esc(S.first_name) + '. Pick a time for your 30-min demo call:', { fast: true }).then(function (m) {
+      var box = el('div', 'ct-cal');
+      box.id = 'ct-cal';
+      box.innerHTML = '<div class="ct-cal__loading"><b aria-hidden="true"></b>Loading calendar…</div>';
+      m.appendChild(box); scroll();
       input.placeholder = 'Demo requested ✓';
-      if (window.clarity) m.querySelector('.ct-book').addEventListener('click', function () { clarity('event', 'demo_book_click'); });
+      embedCal(box, name);
     });
+  }
+
+  /* Cal.com inline booking (official embed script: auto-height, prefilled name/email).
+     If the script can't load, fall back to a plain link. */
+  function embedCal(box, name) {
+    var fallback = function () {
+      var url = BOOKING_URL + '?' + new URLSearchParams({ name: name, email: S.email || '' }).toString();
+      box.innerHTML = '<a class="ct-book" href="' + esc(url) + '" target="_blank" rel="noopener">Book your 30-min call<span aria-hidden="true">→</span></a>';
+    };
+    (function (C, A, L) { var p = function (a, ar) { a.q.push(ar); }; var d = C.document; C.Cal = C.Cal || function () { var cal = C.Cal; var ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; var s = d.createElement('script'); s.src = A; s.onerror = fallback; d.head.appendChild(s); cal.loaded = true; } if (ar[0] === L) { var api = function () { p(api, arguments); }; var namespace = ar[1]; api.q = api.q || []; if (typeof namespace === 'string') { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ['initNamespace', namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, 'https://app.cal.com/embed/embed.js', 'init');
+    var link = BOOKING_URL.replace(/^https:\/\/cal\.com\//, '');
+    Cal('init', 'demo', { origin: 'https://cal.com' });
+    Cal.ns.demo('inline', { elementOrSelector: '#ct-cal', calLink: link, config: { layout: 'month_view', theme: 'light', name: name, email: S.email || '' } });
+    Cal.ns.demo('ui', { theme: 'light', hideEventTypeDetails: false, layout: 'month_view' });
+    Cal.ns.demo('on', { action: 'linkReady', callback: function () { var l = box.querySelector('.ct-cal__loading'); if (l) l.remove(); var m = box.closest('.ct-msg') || box; window.scrollTo({ top: m.getBoundingClientRect().top + window.scrollY - 190, behavior: reduce ? 'auto' : 'smooth' }); } });
+    Cal.ns.demo('on', { action: 'bookingSuccessful', callback: function () {
+      if (window.clarity) clarity('event', 'demo_booked');
+      if (window.gsTrack) gsTrack('Schedule', { email: S.email }, { content_name: 'AI Designer demo call' });
+    } });
   }
 
   function fail() {

@@ -107,6 +107,12 @@
 .ct-flow { display: flex; align-items: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
 .ct-flow span { padding: 7px 12px; border-radius: 10px; background: var(--white); border: 1px solid #E4E0FF; font-size: 13px; font-weight: 500; }
 .ct-flow em { font-style: normal; color: #B8B0F5; }
+.ct-msg--agent:has(.ct-cal) { align-items: stretch; }
+.ct-cal { width: 100%; min-height: 560px; border-radius: 20px; border: 1px solid #EAEAEA; background: #fff; overflow: hidden; }
+.ct-cal__loading { display: flex; align-items: center; justify-content: center; gap: 10px; height: 560px; font-size: 14px; color: var(--ct-muted); }
+.ct-cal__loading b { width: 14px; height: 14px; border-radius: 50%; border: 2px solid #D4D4D4; border-top-color: var(--black); animation: ct-spin .8s linear infinite; }
+@keyframes ct-spin { to { transform: rotate(360deg); } }
+.ct-cal .ct-book { margin: 22px; }
 .ct-book { display: flex; align-items: center; justify-content: space-between; margin: 18px 22px 2px; padding: 14px 18px; border-radius: 14px; background: var(--black); color: #fff; font-size: 15px; font-weight: 600; text-decoration: none; transition: transform .2s ease, opacity .2s ease; }
 .ct-book:hover { opacity: .9; }
 .ct-book:active { transform: scale(.98); }
