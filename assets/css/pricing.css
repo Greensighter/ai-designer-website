@@ -160,3 +160,4 @@
 /* v7: key plan details back in the cards */
 .plan .plan__rows { margin: 20px 0 0; padding-top: 20px; border-top: 1px solid #E0E0E0; gap: 12px; font-size: 14px; }
 .plan .plan__rows + .plan__cta { margin-top: 32px; }
+.plan .plan__rows b { font-weight: 400; color: var(--black); }
