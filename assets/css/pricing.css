@@ -126,3 +126,6 @@
 .plan--hl .plan__cta:hover { background: #222; }
 .plan__tickets { border-color: #E0E0E0; }
 .plan--hl .plan__tickets { border-color: var(--line); }
+
+/* v5: all cards #F1F1F1 with a 1px #E5E5E5 border */
+.plan, .plan--hl { background: #F1F1F1; border: 1px solid #E5E5E5; box-shadow: none; }
