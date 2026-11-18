@@ -164,3 +164,8 @@
 /* v8: info tooltips on comparison table rows */
 .tip--row .tip__box { position: fixed; left: 0; right: auto; bottom: auto; width: 300px; }
 .ctable--plans th.rowh .tip { flex-wrap: nowrap; }
+/* v9: homepage-style dividers between sections */
+.pricing { padding: 0; gap: 0; display: block; }
+.pricing__part { display: flex; flex-direction: column; gap: 72px; padding-top: 96px; padding-bottom: 96px; }
+.pricing__part:first-child { padding-top: 72px; }
+@media (max-width: 720px) { .pricing__part { gap: 56px; padding-top: 64px; padding-bottom: 64px; } .pricing__part:first-child { padding-top: 48px; } }
