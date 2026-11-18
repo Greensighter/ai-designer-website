@@ -129,3 +129,31 @@
 
 /* v5: all cards #F1F1F1 with a 1px #E5E5E5 border */
 .plan, .plan--hl { background: #F1F1F1; border: 1px solid #E5E5E5; box-shadow: none; }
+
+/* v6: calmer cards (more space, fewer details), homepage-style table and FAQ */
+.pricing { gap: 96px; }
+.plans { gap: 20px; }
+.plan { gap: 0; padding: 32px 28px 28px; }
+.plan__top { min-height: 28px; }
+.plan__name { font-size: 20px; font-weight: 600; }
+.plan__note { margin: 8px 0 0; font-size: 15px; color: #6B6B6B; }
+.plan__pricebox { margin: 32px 0 0; }
+.plan__price { margin: 0; }
+.plan__amount { font-size: 48px; }
+.plan__bill { margin-top: 8px; }
+.plan__tickets { margin: 28px 0 0; padding: 0; border: 0; font-size: 16px; }
+.plan__cta { margin-top: 32px; }
+.plan__trialnote { margin: 12px 0 0; font-size: 13px; color: #8A8A8A; text-align: center; }
+
+.cmp, .p-faq { display: flex; flex-direction: column; gap: 40px; }
+.cmp__title { align-self: center; color: var(--ink); }
+.ctable--plans thead th { vertical-align: bottom; }
+.ctable--plans .cmp-price { display: block; margin-top: 6px; font-family: var(--font-body); font-size: 14px; font-weight: 400; color: #6B6B6B; }
+.ctable--plans th.rowh { font-weight: 400; text-align: left; }
+.ctable--plans th.rowh > div { padding: 22px 0; border-bottom: 1.5px dotted #D4D4D4; color: var(--text); line-height: 1.4; }
+.ctable--plans td > div { padding: 22px 0; }
+.ctable--plans tbody tr:last-child th > div { border-bottom-color: transparent; }
+.ctable--plans .ok { justify-content: flex-end; }
+.faq-list { width: 100%; max-width: 860px; margin: 0 auto; }
+@media (max-width: 720px) { .plan { padding: 28px 22px 24px; } .pricing { gap: 72px; } }
+.plan__note { min-height: 3.1em; } @media (max-width: 960px) { .plan__note { min-height: 0; } }
