@@ -109,3 +109,9 @@
 .plan--hl .plan__rows .plan__trial b { color: var(--accent); }
 @media (max-width: 960px) { .plans { gap: 48px 16px; } .bill { margin-bottom: -24px; } }
 @media (max-width: 420px) { .bill__opt { padding: 0 14px; } }
+
+/* v3: white cards; recommended card keeps rounded corners and sits on the accent flag */
+.plans { isolation: isolate; }
+.plan { background: #fff; }
+.plan--hl { border-radius: 20px; }
+.plan__flag { z-index: -1; bottom: calc(100% - 22px); padding: 7px 0 29px; border-radius: 22px 22px 0 0; }
