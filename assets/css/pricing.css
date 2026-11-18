@@ -170,3 +170,4 @@
 .pricing__part:first-child { padding-top: 72px; }
 @media (max-width: 720px) { .pricing__part { gap: 56px; padding-top: 64px; padding-bottom: 64px; } .pricing__part:first-child { padding-top: 48px; } }
 .p-hero__sub { max-width: none; }
+.pricing__part--table { padding-bottom: 0; }
