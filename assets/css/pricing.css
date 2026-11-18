@@ -171,3 +171,11 @@
 @media (max-width: 720px) { .pricing__part { gap: 56px; padding-top: 64px; padding-bottom: 64px; } .pricing__part:first-child { padding-top: 48px; } }
 .p-hero__sub { max-width: none; }
 .pricing__part--table { padding-bottom: 0; }
+/* v10: richer ticket tooltip with examples */
+.tip__box .tip__h { display: block; font-weight: 600; margin-bottom: 4px; }
+.tip__box .tip__p { display: block; color: rgba(255, 255, 255, .78); }
+.tip__box .tip__ex { display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, .16); }
+.tip__box .tip__ex span { color: rgba(255, 255, 255, .78); }
+.tip__box .tip__ex b { font-weight: 600; text-align: right; font-variant-numeric: tabular-nums; }
+.tip__box .tip__ex::before { content: "Examples"; grid-column: 1 / -1; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: rgba(255, 255, 255, .5); }
+.tip--row .tip__box { width: 320px; }
