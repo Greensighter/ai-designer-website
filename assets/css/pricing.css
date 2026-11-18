@@ -115,3 +115,14 @@
 .plan { background: #fff; }
 .plan--hl { border-radius: 20px; }
 .plan__flag { z-index: -1; bottom: calc(100% - 22px); padding: 7px 0 29px; border-radius: 22px 22px 0 0; }
+
+/* v4: grey cards, recommended card white with a badge (no outline, no flag) */
+.plans { padding-top: 0; align-items: stretch; }
+.plan { background: #F1F1F1; border: 0; }
+.plan__cta { background: #fff; }
+.plan__cta:hover { background: #FAFAFA; }
+.plan--hl { background: #fff; border: 0; border-radius: 20px; box-shadow: 0 24px 48px -28px rgba(0, 0, 0, .25); }
+.plan--hl .plan__cta { background: var(--black); color: #fff; }
+.plan--hl .plan__cta:hover { background: #222; }
+.plan__tickets { border-color: #E0E0E0; }
+.plan--hl .plan__tickets { border-color: var(--line); }
