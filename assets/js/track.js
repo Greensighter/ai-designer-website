@@ -9,7 +9,7 @@
   function uid() { return (crypto.randomUUID ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2)); }
   window.gsTrack = function (name, user, custom) {
     var id = uid();
-    var std = name === 'PageView' || name === 'Lead';
+    var std = name === 'PageView' || name === 'Lead' || name === 'Schedule';
     if (window.fbq) fbq(std ? 'track' : 'trackCustom', name, custom || {}, { eventID: id });
     var body = Object.assign({ event_name: name, event_id: id, url: location.href, fbp: cookie('_fbp'), fbc: fbc(), custom_data: custom }, user || {});
     try {
