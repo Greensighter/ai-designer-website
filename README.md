@@ -6,7 +6,7 @@ Static site with no build step: plain HTML, CSS and JavaScript.
 
 ```
 index.html              Landing page
-waitlist.html           Waitlist sign-up page (all "Join Waitlist" buttons link here)
+demo.html               Book-a-demo chat (served at /demo; /waitlist redirects here)
 assets/
   css/main.css          Landing styles + shared tokens (colors, fonts, buttons, badge)
   css/waitlist.css      Waitlist page styles

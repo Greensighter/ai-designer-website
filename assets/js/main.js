@@ -27,7 +27,7 @@
   var cta = document.getElementById('hero-cta');
   if (!cta) return;
   var slot = cta.parentNode;
-  var fin = document.getElementById('waitlist');
+  var fin = document.getElementById('demo');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var RANGE = 750, MIN = 0.86, GAP = 20, cur = 0;
   var hov = false, hs = 1;
@@ -406,7 +406,7 @@
 })();
 
 /* LinkedIn conversion: demo button clicks (Meta tracks Lead + Schedule in chat.js) */
-document.querySelectorAll('a[href*="waitlist.html"]').forEach(function (a) {
+document.querySelectorAll('a[href="/demo"]').forEach(function (a) {
   a.addEventListener('click', function () {
     if (window.lintrk) { window.lintrk('track', { conversion_id: 31735690 }); }
   });

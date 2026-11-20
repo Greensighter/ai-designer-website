@@ -408,7 +408,7 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
     completed = true;
     if (window.lintrk) { window.lintrk('track', { conversion_id: 31735682 }); }
     if (window.gsTrack) { gsTrack('Lead', { email: S.email, first_name: S.first_name, last_name: S.last_name }, { content_name: 'AI Designer demo' }); }
-    if (window.clarity) { clarity('event', 'waitlist_signup'); clarity('set', 'pm_tool', S.pm_tool); clarity('set', 'team_size', S.team_size); }
+    if (window.clarity) { clarity('event', 'demo_lead'); clarity('set', 'pm_tool', S.pm_tool); clarity('set', 'team_size', S.team_size); }
     var name = [S.first_name, S.last_name].filter(Boolean).join(' ');
     return say('You’re all set, ' + esc(S.first_name) + '. Pick a time for your 30-min demo call:', { fast: true }).then(function (m) {
       var box = el('div', 'ct-cal');
@@ -435,10 +435,15 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
     Cal.ns.demo('inline', { elementOrSelector: '#ct-cal', calLink: link, config: { layout: 'month_view', theme: 'light', name: name, email: S.email || '' } });
     Cal.ns.demo('ui', { theme: 'light', hideEventTypeDetails: false, layout: 'month_view' });
     Cal.ns.demo('on', { action: 'linkReady', callback: function () { var l = box.querySelector('.ct-cal__loading'); if (l) l.remove(); var m = box.closest('.ct-msg') || box; window.scrollTo({ top: m.getBoundingClientRect().top + window.scrollY - 190, behavior: reduce ? 'auto' : 'smooth' }); } });
-    Cal.ns.demo('on', { action: 'bookingSuccessful', callback: function () {
+    /* Schedule fires once per booking. bookingSuccessfulV2 is current; bookingSuccessful is the deprecated twin. */
+    var booked = false;
+    var onBooked = function () {
+      if (booked) return; booked = true;
       if (window.clarity) clarity('event', 'demo_booked');
-      if (window.gsTrack) gsTrack('Schedule', { email: S.email }, { content_name: 'AI Designer demo call' });
-    } });
+      if (window.gsTrack) gsTrack('Schedule', { email: S.email, first_name: S.first_name, last_name: S.last_name }, { content_name: 'AI Designer demo call' });
+    };
+    Cal.ns.demo('on', { action: 'bookingSuccessfulV2', callback: onBooked });
+    Cal.ns.demo('on', { action: 'bookingSuccessful', callback: onBooked });
   }
 
   function fail() {
