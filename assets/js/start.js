@@ -29,11 +29,21 @@
     { id: 'mismatch', t: 'What ships never matches the Figma file.' }
   ];
   var STATS = {
-    hiring: { n: '2–3 months', t: 'to hire a designer, plus about a month before they ship real work.' },
-    bottleneck: { n: '92% / 91%', t: 'of designers and developers say the handoff between design and code needs fixing.', s: 'Figma, State of the Designer 2025' },
+    hiring: { n: '3+ months', t: 'from job post to a designer shipping real work. I start in 2–3 days.' },
+    bottleneck: { n: '92%', t: 'of designers say the handoff between design and code needs fixing. 91% of developers agree.', s: 'Figma, State of the Designer 2025' },
     rebuild: { n: '51%', t: 'of teams say rework and wasted specialist time is the cost of designer and developer friction.', s: 'Progress Telerik, Designer Developer Collaboration' },
     mismatch: { n: '21%', t: 'of designers say their designs get implemented pixel perfect.', s: 'CollabSoft designer survey, 2025' },
     cost: { n: '$15–25k', t: 'a month for an in-house designer and frontend developer, before tools and time off.' }
+  };
+  function dots(n) { var h = ''; for (var d = 0; d < 100; d++) h += '<i' + (d < n ? ' class="on" style="animation-delay:' + (d * 12) + 'ms"' : '') + '></i>'; return '<div class="q-dots" aria-hidden="true">' + h + '</div>'; }
+  function donut(p) { var c = 2 * Math.PI * 52; return '<svg class="q-donut" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="14"/><circle class="q-donut__arc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" style="--off:' + (c * (1 - p / 100)).toFixed(1) + ';--full:' + c.toFixed(1) + '" transform="rotate(-90 60 60)"/></svg>'; }
+  function bars(rows) { return '<div class="q-bars" aria-hidden="true">' + rows.map(function (r) { return '<div class="q-bars__r' + (r.us ? ' is-us' : '') + '"><span class="q-bars__k">' + r.k + '</span><span class="q-bars__t"><i style="--w:' + r.w + '%"></i></span><span class="q-bars__v">' + r.v + '</span></div>'; }).join('') + '</div>'; }
+  var VIS = {
+    bottleneck: function () { return dots(92); },
+    mismatch: function () { return dots(21); },
+    rebuild: function () { return donut(51); },
+    hiring: function () { return bars([{ k: 'Hiring', w: 100, v: '3+ months' }, { k: 'AI Design Engineer', w: 4, v: '2–3 days', us: 1 }]); },
+    cost: function () { return bars([{ k: 'In-house', w: 100, v: '$15–25k/mo' }, { k: 'AI Design Engineer', w: 10, v: '$1,990/mo', us: 1 }]); }
   };
 
   /* ---------- screens ---------- */
@@ -50,9 +60,8 @@
 
     { id: 'stats', cta: 'There’s a better way',
       html: function () {
-        var ids = S.pains.slice(0, 2); if (!ids.length) ids = ['bottleneck', 'mismatch'];
-        if (ids.length === 1) ids.push(ids[0] === 'bottleneck' ? 'mismatch' : 'bottleneck');
-        return '<h1 class="q-h">You’re not alone.</h1><div class="q-gap"></div><div class="q-stats">' + ids.map(function (k) { var x = STATS[k]; return '<div class="q-stat"><div class="q-stat__n">' + x.n + '</div><p class="q-stat__t">' + x.t + '</p>' + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div>'; }).join('') + '</div><p class="q-p">Every week this costs you features that don’t ship.</p>';
+        var k = S.pains[0] || 'bottleneck', x = STATS[k];
+        return '<h1 class="q-h">You’re not alone.</h1><div class="q-gap"></div><div class="q-info">' + VIS[k]() + '<div class="q-info__n">' + x.n + '</div><p class="q-info__t">' + x.t + '</p>' + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div><p class="q-p">Every week this costs you features that don’t ship.</p>';
       } },
 
     { id: 'cost', cta: 'Show me how',
@@ -122,7 +131,7 @@
     if (sc.bind) sc.bind();
     foot.hidden = sc.foot === false;
     back.hidden = i === 0;
-    nextLabel.textContent = sc.cta || 'Continue';
+    nextLabel.textContent = 'Continue';
     count.innerHTML = '<b>' + (i + 1) + '</b>/' + SCREENS.length;
     bar.style.width = ((i + 1) / SCREENS.length * 100) + '%';
     refresh();
@@ -137,7 +146,7 @@
     var move = function () { i = Math.max(0, Math.min(SCREENS.length - 1, i + d)); render(); };
     if (leave && leave.then) {
       busy = true; refresh(); nextLabel.textContent = 'Saving…';
-      leave.then(function () { busy = false; move(); }, function (msg) { busy = false; nextLabel.textContent = cur().cta || 'Continue'; refresh(); var e = document.getElementById('q-err'); if (e) e.textContent = msg || 'Something went wrong. Try again.'; });
+      leave.then(function () { busy = false; move(); }, function (msg) { busy = false; nextLabel.textContent = 'Continue'; refresh(); var e = document.getElementById('q-err'); if (e) e.textContent = msg || 'Something went wrong. Try again.'; });
     } else move();
   }
   next.addEventListener('click', function () { go(1); });

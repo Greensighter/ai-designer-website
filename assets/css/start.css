@@ -147,3 +147,25 @@ button:focus-visible, .q-input:focus-visible, a:focus-visible { outline: 2px sol
 .q-opts--logos .q-opt { justify-content: flex-start; gap: 10px; padding-left: 16px; text-align: left; font-weight: 500; }
 .q-opt__logo { flex: none; display: flex; width: 24px; height: 24px; align-items: center; justify-content: center; }
 .q-opt__logo svg { width: 24px; height: 24px; }
+
+/* "You're not alone" infographic */
+.q-info { padding: 22px 20px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); }
+.q-info__n { margin-top: 18px; font-family: var(--font-display); font-weight: 500; font-size: 52px; line-height: 1; letter-spacing: -0.04em; color: var(--accent); }
+.q-info__t { margin: 10px 0 0; font-size: 16px; line-height: 1.45; }
+.q-dots { display: grid; grid-template-columns: repeat(20, 1fr); gap: 4px; }
+.q-dots i { aspect-ratio: 1; border-radius: 50%; background: var(--line); }
+.q-dots i.on { animation: q-dot .3s ease both; }
+@keyframes q-dot { from { background: var(--line); transform: scale(.6); } to { background: var(--accent); transform: none; } }
+.q-donut { display: block; width: 116px; height: 116px; margin: 0; }
+.q-donut__arc { stroke-dashoffset: var(--full); animation: q-arc 1.2s .2s cubic-bezier(.3,.7,.2,1) forwards; }
+@keyframes q-arc { to { stroke-dashoffset: var(--off); } }
+.q-bars { display: grid; gap: 14px; }
+.q-bars__r { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; }
+.q-bars__k { font-size: 14px; color: var(--muted); }
+.q-bars__v { font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.q-bars__t { grid-column: 1 / -1; grid-row: 2; height: 14px; border-radius: 8px; background: #F1F1EE; overflow: hidden; }
+.q-bars__t i { display: block; height: 100%; width: 0; border-radius: inherit; background: #BDBDB8; animation: q-bar 1s .2s cubic-bezier(.3,.7,.2,1) forwards; }
+.is-us .q-bars__t i { background: var(--accent); min-width: 14px; }
+.is-us .q-bars__k { color: var(--accent); font-weight: 600; }
+@keyframes q-bar { to { width: var(--w); } }
+@media (prefers-reduced-motion: reduce) { .q-dots i.on { animation: none; background: var(--accent); } .q-donut__arc { animation: none; stroke-dashoffset: var(--off); } .q-bars__t i { animation: none; width: var(--w); } }
