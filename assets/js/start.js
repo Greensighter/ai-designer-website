@@ -23,10 +23,10 @@
 
   var PAINS = [
     { id: 'hiring', t: 'We’re still hiring a designer. It’s been months.' },
+    { id: 'cost', t: 'Design and code cost us two salaries.' },
     { id: 'bottleneck', t: 'Our designer is the bottleneck. Everything waits on design.' },
-    { id: 'rebuild', t: 'Devs wait for designs, then rebuild them anyway.' },
-    { id: 'mismatch', t: 'What ships never matches the Figma file.' },
-    { id: 'cost', t: 'Design and code cost us two salaries.' }
+    { id: 'rebuild', t: 'Handoff from design to code takes days of back-and-forth.' },
+    { id: 'mismatch', t: 'What ships never matches the Figma file.' }
   ];
   var STATS = {
     hiring: { n: '2–3 months', t: 'to hire a designer, plus about a month before they ship real work.' },
