@@ -578,3 +578,6 @@ html, body { overflow-x: clip; }
 @media (max-width: 720px) { .h1__br { display: none; } .hero-chips { gap: 6px; } .hero-chip { font-size: 13px; padding: 6px 10px; gap: 6px; } .hero-chip svg { width: 15px; height: 15px; } .hero__desc { font-size: 15px; } }
 .hero__head .hero__desc { margin-top: 6px; }
 @media (min-width: 900px) { .h1--offer { font-size: 86px; } }
+
+.ui--pr .ui__head b { display: inline-flex; align-items: center; gap: 8px; }
+.ui-chip--pr { border-color: #6B56F0; background: #6B56F0; color: #fff; }
