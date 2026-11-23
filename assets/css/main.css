@@ -583,7 +583,7 @@ html, body { overflow-x: clip; }
 .ui-chip--pr { border-color: #6B56F0; background: #6B56F0; color: #fff; }
 /* Compare: in-house vs AI Design Engineer (2 columns) */
 .compare--2 .ctable { min-width: 0; }
-.compare--2 .ctable th:first-child, .compare--2 .ctable td:first-child { width: 30%; }
+.compare--2 .ctable th:first-child, .compare--2 .ctable td:first-child { width: 44%; }
 .compare--2 .ctable thead th, .compare--2 .ctable td > div { text-align: left; }
 .compare--2 .ctable thead th:last-child { color: var(--accent, #6B56F0); }
 @media (max-width: 720px) {
@@ -591,5 +591,5 @@ html, body { overflow-x: clip; }
   .compare--2 .ctable th, .compare--2 .ctable td { padding: 0 10px; }
   .compare--2 .ctable thead th { font-size: 16px; padding-top: 16px; padding-bottom: 16px; }
   .compare--2 .ctable td > div, .compare--2 .ctable th > div { padding: 16px 0 !important; }
-  .compare--2 .ctable th:first-child, .compare--2 .ctable td:first-child { width: 32%; padding-left: 12px !important; }
+  .compare--2 .ctable th:first-child, .compare--2 .ctable td:first-child { width: 36%; padding-left: 12px !important; }
 }
