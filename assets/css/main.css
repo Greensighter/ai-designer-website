@@ -593,3 +593,10 @@ html, body { overflow-x: clip; }
   .compare--2 .ctable td > div, .compare--2 .ctable th > div { padding: 16px 0 !important; }
   .compare--2 .ctable th:first-child, .compare--2 .ctable td:first-child { width: 36%; padding-left: 12px !important; }
 }
+
+/* FAQ art: tool logo stack + GitHub chip */
+.faq-stack { display: inline-flex; }
+.faq-stack .faq-chip__ic { box-shadow: 0 0 0 2px var(--white, #fff); background: #fff; }
+.faq-stack .faq-chip__ic + .faq-chip__ic { margin-left: -8px; }
+.faq-stack .faq-chip__ic svg { width: 18px; height: 18px; }
+.faq-chip--d { right: 6%; bottom: 4%; animation-delay: -3s; }
