@@ -577,3 +577,4 @@ html, body { overflow-x: clip; }
 @media (min-width: 900px) { .h1--offer { max-width: none; } }
 @media (max-width: 720px) { .h1__br { display: none; } .hero-chips { gap: 6px; } .hero-chip { font-size: 13px; padding: 6px 10px; gap: 6px; } .hero-chip svg { width: 15px; height: 15px; } .hero__desc { font-size: 15px; } }
 .hero__head .hero__desc { margin-top: 6px; }
+@media (min-width: 900px) { .h1--offer { font-size: 86px; } }
