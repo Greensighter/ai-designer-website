@@ -439,3 +439,21 @@ document.querySelectorAll('a[href="/demo"]').forEach(function (a) {
     var p = v.play(); if (p && p.catch) p.catch(function () {});
   });
 })();
+
+/* FAQ art: ticket-tool logo rotates in step with the hero chips */
+(function () {
+  var rot = document.querySelector('.faq-rot');
+  if (!rot || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var items = Array.prototype.slice.call(rot.querySelectorAll('.faq-rot__item'));
+  var i = 0;
+  setInterval(function () {
+    var cur = items[i];
+    i = (i + 1) % items.length;
+    var next = items[i];
+    next.classList.remove('is-leaving');
+    cur.classList.remove('is-active');
+    cur.classList.add('is-leaving');
+    next.classList.add('is-active');
+    setTimeout(function () { cur.classList.remove('is-leaving'); }, 560);
+  }, 2200);
+})();

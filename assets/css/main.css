@@ -594,9 +594,11 @@ html, body { overflow-x: clip; }
   .compare--2 .ctable th:first-child, .compare--2 .ctable td:first-child { width: 36%; padding-left: 12px !important; }
 }
 
-/* FAQ art: tool logo stack + GitHub chip */
-.faq-stack { display: inline-flex; }
-.faq-stack .faq-chip__ic { box-shadow: 0 0 0 2px var(--white, #fff); background: #fff; }
-.faq-stack .faq-chip__ic + .faq-chip__ic { margin-left: -8px; }
-.faq-stack .faq-chip__ic svg { width: 18px; height: 18px; }
+/* FAQ art: rotating ticket-tool logo + GitHub chip */
+.faq-rot { position: relative; perspective: 200px; overflow: hidden; }
+.faq-rot__item { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(70%) rotateX(-80deg); backface-visibility: hidden; transition: transform .55s cubic-bezier(.4, 0, .2, 1), opacity .4s ease; }
+.faq-rot__item svg { width: 18px; height: 18px; }
+.faq-rot__item.is-active { opacity: 1; transform: none; }
+.faq-rot__item.is-leaving { opacity: 0; transform: translateY(-70%) rotateX(80deg); }
+@media (prefers-reduced-motion: reduce) { .faq-rot__item { transition: none; } }
 .faq-chip--d { right: 6%; bottom: 4%; animation-delay: -3s; }
