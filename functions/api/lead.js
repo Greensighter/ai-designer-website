@@ -2,8 +2,8 @@
  * Emails the team through Resend and keeps a backup copy in KV.
  * status = "complete" (finished chat) or "partial" (left halfway, answers so far). */
 
-const FIELDS = ['status', 'first_name', 'last_name', 'email', 'website', 'team_size', 'pm_tool', 'designers', 'answered'];
-const LABELS = { first_name: 'First name', last_name: 'Last name', email: 'Email', website: 'Website', team_size: 'Team size', pm_tool: 'Ticket tool', designers: 'Designers', answered: 'Answered' };
+const FIELDS = ['status', 'source', 'first_name', 'last_name', 'email', 'role', 'pains', 'website', 'team_size', 'pm_tool', 'tasks', 'designers', 'answered'];
+const LABELS = { first_name: 'First name', last_name: 'Last name', email: 'Email', role: 'Role', pains: 'Pains', website: 'Website', team_size: 'Team size', pm_tool: 'Ticket tool', tasks: 'Tasks a month', designers: 'Designers', source: 'Source', answered: 'Answered' };
 
 const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
