@@ -15,18 +15,18 @@
   var ICON = {};
   document.querySelectorAll('#q-icons [data-ic]').forEach(function (t) { ICON[t.dataset.ic] = t.innerHTML; });
 
-  var S = { name: '', role: '', pains: [], tool: '', tasks: '', email: '' };
+  var S = { name: '', role: '', pains: [], tool: '', email: '' };
   var check = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var nm = function () { return esc(S.name || 'there'); };
   var ev = function (n) { if (window.clarity) clarity('event', n); };
 
   var PAINS = [
-    { id: 'hiring', t: '“We’re still hiring a designer. It’s been months.”' },
-    { id: 'bottleneck', t: '“Our designer is the bottleneck. Everything waits on design.”' },
-    { id: 'rebuild', t: '“Devs wait for designs, then rebuild them anyway.”' },
-    { id: 'mismatch', t: '“What ships never matches the Figma file.”' },
-    { id: 'cost', t: '“Design and code cost us two salaries.”' }
+    { id: 'hiring', t: 'We’re still hiring a designer. It’s been months.' },
+    { id: 'bottleneck', t: 'Our designer is the bottleneck. Everything waits on design.' },
+    { id: 'rebuild', t: 'Devs wait for designs, then rebuild them anyway.' },
+    { id: 'mismatch', t: 'What ships never matches the Figma file.' },
+    { id: 'cost', t: 'Design and code cost us two salaries.' }
   ];
   var STATS = {
     hiring: { n: '2–3 months', t: 'to hire a designer, plus about a month before they ship real work.' },
@@ -43,7 +43,7 @@
       bind: function () { var i = document.getElementById('q-name'); i.addEventListener('input', function () { S.name = i.value.replace(/\s+/g, ' ').trimStart(); refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); } },
 
     { id: 'role', valid: function () { return !!S.role; },
-      html: function () { return '<h1 class="q-h">Nice to meet you, ' + nm() + '. What do you do?</h1><div class="q-gap"></div>' + single('role', ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead']); } },
+      html: function () { return '<h1 class="q-h">Nice to meet you, ' + nm() + '. What do you do?</h1><div class="q-gap"></div>' + single('role', ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead', 'Other']); } },
 
     { id: 'pain', valid: function () { return S.pains.length > 0; },
       html: function () { return '<p class="q-eyebrow">Be honest</p><h1 class="q-h">What sounds like your team, ' + nm() + '?</h1><p class="q-hint">Pick any that apply.</p><div class="q-gap"></div>' + multi(); } },
@@ -76,8 +76,8 @@
       html: function () { return '<h1 class="q-h">Same brief, two results</h1><p class="q-p">Your components, your patterns. Empty, loading and error states included.</p><div class="q-gap"></div><div class="q-tabs" role="tablist"><button type="button" class="q-tab q-tab--us" role="tab" aria-selected="true" data-shot="gs">AI Design Engineer</button><button type="button" class="q-tab" role="tab" aria-selected="false" data-shot="ai">Gen AI tools</button></div><div class="q-shot"><img id="q-shot" src="assets/img/vs/gs-2.webp" width="540" height="1169" alt="Finance app screen designed by the AI Design Engineer"></div>'; },
       bind: function () { main.querySelectorAll('.q-tab').forEach(function (b) { b.addEventListener('click', function () { main.querySelectorAll('.q-tab').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); }); var us = b.dataset.shot === 'gs'; var img = document.getElementById('q-shot'); img.src = 'assets/img/vs/' + (us ? 'gs' : 'ai') + '-2.webp'; img.alt = us ? 'Finance app screen designed by the AI Design Engineer' : 'Finance app screen from a generic AI tool'; }); }); var pre = new Image(); pre.src = 'assets/img/vs/ai-2.webp'; } },
 
-    { id: 'setup', valid: function () { return S.tool && S.tasks; },
-      html: function () { return '<h1 class="q-h">Let’s see if I’m a fit, ' + nm() + '.</h1><p class="q-label">Where do you track tickets?</p>' + single('tool', ['Jira', 'Linear', 'Asana', 'ClickUp', 'Other'], true) + '<p class="q-label">Design tasks a month</p>' + single('tasks', ['1–10', '11–25', '26–50', '50+'], true); } },
+    { id: 'setup', valid: function () { return !!S.tool; },
+      html: function () { return '<h1 class="q-h">Let’s see if I’m a fit, ' + nm() + '.</h1><p class="q-p">Where does your team track tickets?</p><div class="q-gap"></div>' + single('tool', ['Jira', 'Linear', 'Asana', 'ClickUp', 'Other'], true, true); } },
 
     { id: 'email', cta: 'Book my call', valid: function () { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(S.email.trim()); },
       html: function () { return '<h1 class="q-h">Great fit, ' + nm() + '. Let’s start with <em>3 free tasks.</em></h1><div class="q-gap"></div><label class="sr-only" for="q-email">Work email</label><input class="q-input" id="q-email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" value="' + esc(S.email) + '"><p class="q-err" id="q-err" role="alert"></p><p class="q-hint">No credit card required.</p>'; },
@@ -89,8 +89,8 @@
       bind: function () { document.getElementById('q-back2').addEventListener('click', function () { go(-1); }); embedCal(); } }
   ];
 
-  function single(key, opts, chips) {
-    return '<div class="q-opts' + (chips ? ' q-opts--chips' : '') + '" role="group">' + opts.map(function (o) { return '<button type="button" class="q-opt" data-k="' + key + '" data-v="' + esc(o) + '" aria-pressed="' + (S[key] === o) + '"><span class="q-opt__box">' + check + '</span>' + esc(o) + '</button>'; }).join('') + '</div>';
+  function single(key, opts, chips, logos) {
+    return '<div class="q-opts' + (chips ? ' q-opts--chips' : '') + (logos ? ' q-opts--logos' : '') + '" role="group">' + opts.map(function (o) { var ic = logos ? '<span class="q-opt__logo">' + (ICON['t-' + o.toLowerCase()] || '') + '</span>' : ''; return '<button type="button" class="q-opt" data-k="' + key + '" data-v="' + esc(o) + '" aria-pressed="' + (S[key] === o) + '"><span class="q-opt__box">' + check + '</span>' + ic + esc(o) + '</button>'; }).join('') + '</div>';
   }
   function multi() {
     return '<div class="q-opts q-opts--multi" role="group">' + PAINS.map(function (p) { return '<button type="button" class="q-opt" data-m="' + p.id + '" aria-pressed="' + (S.pains.indexOf(p.id) > -1) + '"><span class="q-opt__box">' + check + '</span>' + p.t + '</button>'; }).join('') + '</div>';
@@ -147,7 +147,7 @@
   var FREE = /@(gmail|googlemail|yahoo|ymail|outlook|hotmail|live|msn|icloud|me|mac|aol|proton|protonmail|pm|gmx|mail|yandex|ya|inbox|zoho|qq|163|126)\./i;
   var leadSent = false;
   function payload() {
-    return { source: 'start-quiz', status: 'complete', first_name: S.name.trim(), email: S.email.trim().toLowerCase(), role: S.role, pains: S.pains.join(', '), pm_tool: S.tool, tasks: S.tasks, answered: 'Quiz complete' };
+    return { source: 'start-quiz', status: 'complete', first_name: S.name.trim(), email: S.email.trim().toLowerCase(), role: S.role, pains: S.pains.join(', '), pm_tool: S.tool, answered: 'Quiz complete' };
   }
   function submitLead() {
     var email = S.email.trim().toLowerCase();
@@ -168,13 +168,18 @@
   /* ---------- Cal.com ---------- */
   function embedCal() {
     var box = document.getElementById('q-cal');
-    var fallback = function () { var u = BOOKING_URL + '?' + new URLSearchParams({ name: S.name.trim(), email: S.email.trim() }); box.outerHTML = '<a class="q-book-link" href="' + esc(u) + '" target="_blank" rel="noopener">Open the calendar</a>'; };
+    var fallback = function () {
+      var u = BOOKING_URL + '?' + new URLSearchParams({ name: S.name.trim(), email: S.email.trim() });
+      if (!LEAD_ENDPOINT) { box.innerHTML = '<div class="q-cal__loading" style="flex-direction:column;text-align:center;padding:24px">The Cal.com calendar is embedded here on the live site.<br>Previews block outside scripts, so it can’t load in this preview.</div>'; return; }
+      box.outerHTML = '<a class="q-book-link" href="' + esc(u) + '" target="_blank" rel="noopener">Open the calendar</a>';
+    };
     (function (C, A, L) { var p = function (a, ar) { a.q.push(ar); }; var d = C.document; C.Cal = C.Cal || function () { var cal = C.Cal; var ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; var s = d.createElement('script'); s.src = A; s.onerror = fallback; d.head.appendChild(s); cal.loaded = true; } if (ar[0] === L) { var api = function () { p(api, arguments); }; var namespace = ar[1]; api.q = api.q || []; if (typeof namespace === 'string') { cal.ns[namespace] = cal.ns[namespace] || api; p(cal.ns[namespace], ar); p(cal, ['initNamespace', namespace]); } else p(cal, ar); return; } p(cal, ar); }; })(window, 'https://app.cal.com/embed/embed.js', 'init');
     if (Cal.ns && Cal.ns.quiz) { Cal.ns.quiz('inline', { elementOrSelector: '#q-cal', calLink: BOOKING_URL.replace('https://cal.com/', ''), config: { layout: 'column_view', theme: 'light', name: S.name.trim(), email: S.email.trim() } }); return; }
     Cal('init', 'quiz', { origin: 'https://cal.com' });
     Cal.ns.quiz('inline', { elementOrSelector: '#q-cal', calLink: BOOKING_URL.replace('https://cal.com/', ''), config: { layout: 'column_view', theme: 'light', name: S.name.trim(), email: S.email.trim() } });
     Cal.ns.quiz('ui', { theme: 'light', hideEventTypeDetails: true, layout: 'column_view', cssVarsPerTheme: { light: { 'cal-brand': '#6B56F0' } } });
     Cal.ns.quiz('on', { action: 'linkReady', callback: function () { var l = box.querySelector('.q-cal__loading'); if (l) l.remove(); } });
+    setTimeout(function () { if (box.querySelector('.q-cal__loading b')) fallback(); }, 8000);
     var booked = false;
     var onBooked = function () {
       if (booked) return; booked = true;
