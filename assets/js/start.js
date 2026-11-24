@@ -93,7 +93,7 @@
       html: function () { return '<h1 class="q-h">Let’s see if I’m a fit, ' + nm() + '.</h1><p class="q-p">Where does your team track tickets?</p><div class="q-gap"></div>' + single('tool', ['Jira', 'Linear', 'Asana', 'ClickUp', 'Monday', 'Trello', 'Notion', 'GitHub', 'Azure DevOps', 'Other'], true, true); } },
 
     { id: 'email', cta: 'Book my call', valid: function () { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(S.email.trim()); },
-      html: function () { return '<h1 class="q-h">Great fit, ' + nm() + '. Let’s start with <em>3 free tasks.</em></h1><div class="q-gap"></div><label class="sr-only" for="q-email">Work email</label><input class="q-input" id="q-email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" value="' + esc(S.email) + '"><p class="q-err" id="q-err" role="alert"></p><p class="q-hint">No credit card required.</p>'; },
+      html: function () { return '<h1 class="q-h">Great fit, ' + nm() + '. Let’s start with <em>3 free tasks.</em></h1><div class="q-gap"></div><label class="sr-only" for="q-email">Work email</label><input class="q-input" id="q-email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" value="' + esc(S.email) + '"><p class="q-hint q-hint--tight">We’ll only use it for your booking. No spam, ever.</p><p class="q-err" id="q-err" role="alert"></p>'; },
       bind: function () { var i = document.getElementById('q-email'); i.addEventListener('input', function () { S.email = i.value.trim(); document.getElementById('q-err').textContent = ''; refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); },
       leave: function () { return submitLead(); } },
 
