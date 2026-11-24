@@ -66,9 +66,7 @@
       html: function () { return '<h1 class="q-h">Nice to meet you, ' + nm() + '. What do you do?</h1><div class="q-gap"></div>' + single('role', ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead', 'Designer / freelancer', 'Other']); } },
 
     { id: 'nofit', foot: false, skip: function () { return S.role !== 'Designer / freelancer'; },
-      html: function () { return '<p class="q-eyebrow">Thanks, ' + nm() + '</p><h1 class="q-h">I’m built for <em>product teams.</em></h1><p class="q-p">Founders, CTOs and product managers assign me tickets, and I deliver reviewed design and code as a pull request. If a team you work with could use that, send them my way.</p><div class="q-gap"></div>'
-        + '<a class="q-book-link" href="/?utm_source=quiz&amp;utm_content=designer">See how Vlad AI works</a><button type="button" class="q-textbtn" id="q-change">Change my answer</button>'; },
-      bind: function () { document.getElementById('q-change').addEventListener('click', function () { S.role = ''; go(-1); }); } },
+      html: function () { return '<h1 class="q-h">I’m built for <em>product teams.</em></h1><p class="q-p">Founders, CTOs and product managers assign me tickets, and I deliver reviewed design and code as a pull request. If a team you work with could use that, send them my way.</p>'; } },
 
     { id: 'pain', valid: function () { return S.pains.length > 0; },
       html: function () { return '<h1 class="q-h">What sounds like your team, ' + nm() + '?</h1><p class="q-hint">Pick any that apply.</p><div class="q-gap"></div>' + multi(); } },
