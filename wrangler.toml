@@ -7,7 +7,7 @@ compatibility_date = "2026-10-15"
 # Who receives demo requests (comma-separated)
 LEAD_EMAILS = "aram@greensighter.com,david@greensighter.com"
 # Sender; greensighter.com is already verified in Resend
-LEAD_FROM = "Greensighter AI Designer <leads@greensighter.com>"
+LEAD_FROM = "Vlad AI <leads@greensighter.com>"
 
 # Backup copy of every lead (also visible in the Cloudflare dashboard under KV)
 [[kv_namespaces]]

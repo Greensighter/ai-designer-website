@@ -120,7 +120,7 @@ var WAITLIST_ENDPOINT = /(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.h
 
   function agentMsg(cont) {
     var m = el('div', 'ct-msg ct-msg--agent' + (cont ? ' is-cont' : ''));
-    m.appendChild(el('span', 'ct-who', 'Greensighter agent'));
+    m.appendChild(el('span', 'ct-who', 'Vlad AI'));
     log.appendChild(m); lastAgent = m; return m;
   }
   function say(html, opts) {

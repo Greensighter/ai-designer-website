@@ -51,15 +51,15 @@
     bottleneck: function (n) { return dots(92, n); },
     mismatch: function (n) { return dots(21, n); },
     rebuild: function (n) { return donut(51, n); },
-    hiring: function (n) { return bars(n, [{ k: 'Hiring a designer', w: 100, v: '3+ months' }, { k: 'AI Design Engineer', w: 3, v: '2–3 days', us: 1 }]); },
-    cost: function (n) { return bars(n, [{ k: 'In-house designer + developer', w: 100, v: '$15–25k/mo' }, { k: 'AI Design Engineer', w: 10, v: '$1,990/mo', us: 1 }]); }
+    hiring: function (n) { return bars(n, [{ k: 'Hiring a designer', w: 100, v: '3+ months' }, { k: 'Vlad AI', w: 3, v: '2–3 days', us: 1 }]); },
+    cost: function (n) { return bars(n, [{ k: 'In-house designer + developer', w: 100, v: '$15–25k/mo' }, { k: 'Vlad AI', w: 10, v: '$1,990/mo', us: 1 }]); }
   };
 
 
   /* ---------- screens ---------- */
   var SCREENS = [
     { id: 'name', cta: 'Nice to meet you', valid: function () { return S.name.trim().length > 0; },
-      html: function () { return '<h1 class="q-h">Hi, I’m your <em>AI Design Engineer.</em></h1><p class="q-p">What’s your name?</p><div class="q-gap"></div><label class="sr-only" for="q-name">Full name</label><input class="q-input" id="q-name" type="text" autocomplete="name" placeholder="Your full name" maxlength="60" value="' + esc(S.name) + '">'; },
+      html: function () { return '<h1 class="q-h">Hi, I’m Vlad, your <em>AI Design Engineer.</em></h1><p class="q-p">What’s your name?</p><div class="q-gap"></div><label class="sr-only" for="q-name">Full name</label><input class="q-input" id="q-name" type="text" autocomplete="name" placeholder="Your full name" maxlength="60" value="' + esc(S.name) + '">'; },
       bind: function () { var i = document.getElementById('q-name'); i.addEventListener('input', function () { S.name = i.value.replace(/\s+/g, ' ').trimStart(); refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); } },
 
     { id: 'role', valid: function () { return !!S.role; },
@@ -79,8 +79,8 @@
     { id: 'cost',
       html: function () { return '<p class="q-eyebrow">It’s the AI era, ' + nm() + '</p><h1 class="q-h">Still paying two full-time salaries for design and code?</h1>'
         + '<div class="q-vbars" aria-hidden="true"><div class="q-vbar"><span class="q-vbar__col"><span class="q-vbar__v">$15–25k</span><i style="--h:100%"></i></span><span class="q-vbar__k">In-house designer + developer</span><span class="q-vbar__s">Minus time off</span></div>'
-        + '<div class="q-vbar is-us"><span class="q-vbar__col"><span class="q-vbar__v">$1,990</span><i style="--h:10%"></i></span><span class="q-vbar__k">AI Design Engineer</span><span class="q-vbar__s">Never off</span></div></div>'
-        + '<p class="sr-only">In-house designer and developer cost $15,000 to $25,000 a month. The AI Design Engineer costs $1,990 a month.</p>'; } },
+        + '<div class="q-vbar is-us"><span class="q-vbar__col"><span class="q-vbar__v">$1,990</span><i style="--h:10%"></i></span><span class="q-vbar__k">Vlad AI</span><span class="q-vbar__s">Never off</span></div></div>'
+        + '<p class="sr-only">In-house designer and developer cost $15,000 to $25,000 a month. Vlad AI costs $1,990 a month.</p>'; } },
 
     { id: 'future',
       html: function () { return '<h1 class="q-h">Here’s how it works, ' + nm() + '.</h1><div class="q-gap"></div><div class="q-tl">'

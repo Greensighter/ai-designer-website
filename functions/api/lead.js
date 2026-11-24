@@ -54,7 +54,7 @@ export async function onRequestPost({ request, env, waitUntil }) {
     method: 'POST',
     headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from: env.LEAD_FROM || 'Greensighter AI Designer <leads@greensighter.com>',
+      from: env.LEAD_FROM || 'Vlad AI <leads@greensighter.com>',
       to: (env.LEAD_EMAILS || 'aram@greensighter.com').split(',').map((s) => s.trim()).filter(Boolean),
       reply_to: lead.email,
       subject, text, html
