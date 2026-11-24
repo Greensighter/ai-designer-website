@@ -606,5 +606,3 @@ html, body { overflow-x: clip; }
 .final__copy { display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .final__sub { margin: 0; font-size: 18px; line-height: 1.5; color: rgba(255,255,255,.85); }
 @media (max-width: 720px) { .final__sub { font-size: 16px; } }
-.final__sub--below { margin-top: -22px; font-size: 16px; color: rgba(255,255,255,.8); text-wrap: balance; }
-@media (max-width: 720px) { .final__sub--below { font-size: 15px; } }
