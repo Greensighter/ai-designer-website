@@ -66,12 +66,12 @@
       html: function () { return '<h1 class="q-h">Nice to meet you, ' + nm() + '. What do you do?</h1><div class="q-gap"></div>' + single('role', ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead', 'Other']); } },
 
     { id: 'pain', valid: function () { return S.pains.length > 0; },
-      html: function () { return '<p class="q-eyebrow">Be honest</p><h1 class="q-h">What sounds like your team, ' + nm() + '?</h1><p class="q-hint">Pick any that apply.</p><div class="q-gap"></div>' + multi(); } },
+      html: function () { return '<h1 class="q-h">What sounds like your team, ' + nm() + '?</h1><p class="q-hint">Pick any that apply.</p><div class="q-gap"></div>' + multi(); } },
 
     { id: 'stats',
       html: function () {
         var k = S.pains[0] || 'bottleneck', x = STATS[k];
-        return '<h1 class="q-h">You’re not alone.</h1><div class="q-info q-info--' + k + '">' + VIS[k](x.n) + '<p class="q-info__t">' + x.t + '</p>' + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div><p class="q-kick">Every week this costs you features that don’t ship.</p>';
+        return '<h1 class="q-h">You’re not alone.</h1><div class="q-info q-info--' + k + '">' + VIS[k](x.n) + '<p class="q-info__t">' + x.t + '</p>' + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div>';
       } },
 
     { id: 'cost',
