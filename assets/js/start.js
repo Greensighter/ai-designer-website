@@ -22,6 +22,17 @@
   var nm = function () { return esc(first() || 'there'); };
   var ev = function (n) { if (window.clarity) clarity('event', n); };
 
+  /* Anonymous step analytics for /quiz-stats: screen views, completed steps, chosen answers. */
+  var SID = (function () { try { var k = sessionStorage.getItem('q_sid'); if (!k) { k = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sessionStorage.setItem('q_sid', k); } return k; } catch (e) { return Math.random().toString(36).slice(2, 12) + Date.now().toString(36); } })();
+  var UTM = (function () { var q = new URLSearchParams(location.search), o = {}; ['utm_source', 'utm_campaign', 'utm_content'].forEach(function (k) { o[k] = q.get(k) || ''; }); try { if (o.utm_source || o.utm_content) sessionStorage.setItem('q_utm', JSON.stringify(o)); else o = JSON.parse(sessionStorage.getItem('q_utm') || 'null') || o; } catch (e) {} return o; })();
+  function track(type, step, value) {
+    if (!LEAD_ENDPOINT) return;
+    var body = JSON.stringify({ sid: SID, type: type, step: step, value: value || '', utm_source: UTM.utm_source, utm_campaign: UTM.utm_campaign, utm_content: UTM.utm_content });
+    try { if (navigator.sendBeacon && navigator.sendBeacon('/api/qe', new Blob([body], { type: 'application/json' }))) return; } catch (e) {}
+    fetch('/api/qe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
+  }
+  function answerOf(id) { return id === 'role' ? S.role : id === 'pain' ? S.pains.join(',') : id === 'setup' ? S.tool : ''; }
+
   var PAINS = [
     { id: 'hiring', t: 'We’re still hiring a designer. It’s been months.' },
     { id: 'cost', t: 'Design and code cost us two salaries.' },
@@ -147,13 +158,15 @@
     refresh();
     window.scrollTo(0, 0);
     ev('quiz_' + sc.id);
+    track('view', sc.id);
   }
   function refresh() { var v = cur().valid; next.disabled = busy || (v ? !v() : false); }
   function go(d) {
     if (busy) return;
     if (d > 0 && cur().valid && !cur().valid()) return;
     var leave = d > 0 && cur().leave ? cur().leave() : null;
-    var move = function () { var n = i + d; while (n > 0 && n < SCREENS.length - 1 && SCREENS[n].skip && SCREENS[n].skip()) n += d; i = Math.max(0, Math.min(SCREENS.length - 1, n)); render(); };
+    var from = cur().id;
+    var move = function () { if (d > 0) track('complete', from, answerOf(from)); else track('back', from); var n = i + d; while (n > 0 && n < SCREENS.length - 1 && SCREENS[n].skip && SCREENS[n].skip()) n += d; i = Math.max(0, Math.min(SCREENS.length - 1, n)); render(); };
     if (leave && leave.then) {
       busy = true; refresh(); nextLabel.textContent = 'Saving…';
       leave.then(function () { busy = false; move(); }, function (msg) { busy = false; nextLabel.textContent = 'Continue'; refresh(); var e = document.getElementById('q-err'); if (e) e.textContent = msg || 'Something went wrong. Try again.'; });
@@ -177,6 +190,7 @@
       if (window.lintrk) window.lintrk('track', { conversion_id: 31735682 });
       if (window.gsTrack) gsTrack('Lead', { email: email, first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' ') }, { content_name: 'AI Design Engineer quiz' });
       ev('quiz_lead');
+      track('lead', 'email');
     };
     if (!LEAD_ENDPOINT) { done(); return Promise.resolve(); }
     return fetch(LEAD_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload()) })
@@ -203,6 +217,7 @@
     var onBooked = function () {
       if (booked) return; booked = true;
       ev('quiz_booked');
+      track('booked', 'book');
       if (window.gsTrack) gsTrack('Schedule', { email: S.email.trim().toLowerCase(), first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' ') }, { content_name: 'AI Design Engineer demo call' });
       setTimeout(function () { location.href = '/booked?name=' + encodeURIComponent(first()); }, 1200);
     };
