@@ -35,16 +35,25 @@
     mismatch: { n: '21%', t: 'of designers say their designs get implemented pixel perfect.', s: 'CollabSoft designer survey, 2025' },
     cost: { n: '$15–25k', t: 'a month for an in-house designer and frontend developer, before tools and time off.' }
   };
-  function dots(n) { var h = ''; for (var d = 0; d < 100; d++) h += '<i' + (d < n ? ' class="on" style="animation-delay:' + (d * 12) + 'ms"' : '') + '></i>'; return '<div class="q-dots" aria-hidden="true">' + h + '</div>'; }
-  function donut(p) { var c = 2 * Math.PI * 52; return '<svg class="q-donut" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="14"/><circle class="q-donut__arc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="14" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" style="--off:' + (c * (1 - p / 100)).toFixed(1) + ';--full:' + c.toFixed(1) + '" transform="rotate(-90 60 60)"/></svg>'; }
-  function bars(rows) { return '<div class="q-bars" aria-hidden="true">' + rows.map(function (r) { return '<div class="q-bars__r' + (r.us ? ' is-us' : '') + '"><span class="q-bars__k">' + r.k + '</span><span class="q-bars__t"><i style="--w:' + r.w + '%"></i></span><span class="q-bars__v">' + r.v + '</span></div>'; }).join('') + '</div>'; }
+  function dots(n, label) {
+    var h = ''; for (var d = 0; d < 100; d++) h += '<i' + (d < n ? ' class="on" style="animation-delay:' + (d * 10) + 'ms"' : '') + '></i>';
+    return '<div class="q-big">' + label + '</div><div class="q-dots" aria-hidden="true">' + h + '</div><div class="q-dots__legend"><span><i class="on"></i>' + n + ' of 100</span></div>';
+  }
+  function donut(p, label) {
+    var c = 2 * Math.PI * 52;
+    return '<div class="q-ring"><svg class="q-donut" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--track)" stroke-width="12"/><circle class="q-donut__arc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" style="--off:' + (c * (1 - p / 100)).toFixed(1) + ';--full:' + c.toFixed(1) + '" transform="rotate(-90 60 60)"/></svg><div class="q-ring__n">' + label + '</div></div>';
+  }
+  function bars(label, rows) {
+    return '<div class="q-big">' + label + '</div><div class="q-bars" aria-hidden="true">' + rows.map(function (r) { return '<div class="q-bars__r' + (r.us ? ' is-us' : '') + '"><span class="q-bars__t"><i style="--w:' + r.w + '%"></i></span><span class="q-bars__k">' + r.k + '</span><span class="q-bars__v">' + r.v + '</span></div>'; }).join('') + '</div>';
+  }
   var VIS = {
-    bottleneck: function () { return dots(92); },
-    mismatch: function () { return dots(21); },
-    rebuild: function () { return donut(51); },
-    hiring: function () { return bars([{ k: 'Hiring', w: 100, v: '3+ months' }, { k: 'AI Design Engineer', w: 4, v: '2–3 days', us: 1 }]); },
-    cost: function () { return bars([{ k: 'In-house', w: 100, v: '$15–25k/mo' }, { k: 'AI Design Engineer', w: 10, v: '$1,990/mo', us: 1 }]); }
+    bottleneck: function (n) { return dots(92, n); },
+    mismatch: function (n) { return dots(21, n); },
+    rebuild: function (n) { return donut(51, n); },
+    hiring: function (n) { return bars(n, [{ k: 'Hiring a designer', w: 100, v: '3+ months' }, { k: 'AI Design Engineer', w: 3, v: '2–3 days', us: 1 }]); },
+    cost: function (n) { return bars(n, [{ k: 'In-house designer + developer', w: 100, v: '$15–25k/mo' }, { k: 'AI Design Engineer', w: 10, v: '$1,990/mo', us: 1 }]); }
   };
+
 
   /* ---------- screens ---------- */
   var SCREENS = [
@@ -58,14 +67,18 @@
     { id: 'pain', valid: function () { return S.pains.length > 0; },
       html: function () { return '<p class="q-eyebrow">Be honest</p><h1 class="q-h">What sounds like your team, ' + nm() + '?</h1><p class="q-hint">Pick any that apply.</p><div class="q-gap"></div>' + multi(); } },
 
-    { id: 'stats', cta: 'There’s a better way',
+    { id: 'stats',
       html: function () {
         var k = S.pains[0] || 'bottleneck', x = STATS[k];
-        return '<h1 class="q-h">You’re not alone.</h1><div class="q-gap"></div><div class="q-info">' + VIS[k]() + '<div class="q-info__n">' + x.n + '</div><p class="q-info__t">' + x.t + '</p>' + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div><p class="q-p">Every week this costs you features that don’t ship.</p>';
+        return '<h1 class="q-h">You’re not alone.</h1><div class="q-info q-info--' + k + '">' + VIS[k](x.n) + '<p class="q-info__t">' + x.t + '</p>' + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div><p class="q-kick">Every week this costs you features that don’t ship.</p>';
       } },
 
-    { id: 'cost', cta: 'Show me how',
-      html: function () { return '<p class="q-eyebrow">It’s the AI era, ' + nm() + '</p><h1 class="q-h">Still paying two full-time salaries for design and code?</h1><div class="q-gap"></div><div class="q-cost"><div class="q-cost__col"><div class="q-cost__k">In-house designer + developer</div><div class="q-cost__v">$15–25k<small style="font-size:14px;color:var(--muted)">/mo</small></div><div class="q-cost__off">Minus vacations, sick days and notice periods</div></div><div class="q-cost__col q-cost__col--us"><div class="q-cost__k">AI Design Engineer</div><div class="q-cost__v">$1,990<small style="font-size:14px">/mo</small></div><div class="q-cost__off">Never off</div></div></div><div class="q-save"><small>What you could save</small><b>$13,000–23,000 a month</b></div>'; } },
+    { id: 'cost',
+      html: function () { return '<p class="q-eyebrow">It’s the AI era, ' + nm() + '</p><h1 class="q-h">Still paying two full-time salaries for design and code?</h1>'
+        + '<div class="q-vbars" aria-hidden="true"><div class="q-vbar"><span class="q-vbar__col"><span class="q-vbar__v">$15–25k</span><i style="--h:100%"></i></span><span class="q-vbar__k">In-house designer + developer</span><span class="q-vbar__s">Minus time off</span></div>'
+        + '<div class="q-vbar is-us"><span class="q-vbar__col"><span class="q-vbar__v">$1,990</span><i style="--h:10%"></i></span><span class="q-vbar__k">AI Design Engineer</span><span class="q-vbar__s">Never off</span></div></div>'
+        + '<p class="sr-only">In-house designer and developer cost $15,000 to $25,000 a month. The AI Design Engineer costs $1,990 a month.</p>'
+        + '<div class="q-save"><small>What you could save</small><b>$13,000–23,000 a month</b></div>'; } },
 
     { id: 'future', cta: 'How does it work?',
       html: function () { return '<h1 class="q-h">Imagine next Monday, ' + nm() + '.</h1><div class="q-gap"></div><div class="q-tl">'
