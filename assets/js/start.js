@@ -15,11 +15,12 @@
   var ICON = {};
   document.querySelectorAll('#q-icons [data-ic]').forEach(function (t) { ICON[t.dataset.ic] = t.innerHTML; });
 
-  var S = { name: '', role: '', pains: [], tool: '', email: '' };
+  var S = { name: '', role: '', pains: [], tool: '', devs: '', email: '' };
   var check = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var first = function () { return (S.name.trim().split(/\s+/)[0] || ''); };
   var nm = function () { return esc(first() || 'there'); };
+  var BUYERS = ['Founder / CEO', 'CTO / Engineering lead', 'Product manager'];
   var ev = function (n) { if (window.clarity) clarity('event', n); };
 
   /* Anonymous step analytics for /quiz-stats: screen views, completed steps, chosen answers. */
@@ -31,7 +32,7 @@
     try { if (navigator.sendBeacon && navigator.sendBeacon('/api/qe', new Blob([body], { type: 'application/json' }))) return; } catch (e) {}
     fetch('/api/qe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true }).catch(function () {});
   }
-  function answerOf(id) { return id === 'role' ? S.role : id === 'pain' ? S.pains.join(',') : id === 'setup' ? S.tool : ''; }
+  function answerOf(id) { return id === 'role' ? S.role : id === 'pain' ? S.pains.join(',') : id === 'setup' ? S.tool : id === 'devs' ? S.devs : ''; }
 
   var PAINS = [
     { id: 'hiring', t: 'We’re still hiring a designer. It’s been months.' },
@@ -70,7 +71,7 @@
   /* ---------- screens ---------- */
   var SCREENS = [
     { id: 'name', cta: 'Nice to meet you', valid: function () { return S.name.trim().length > 0; },
-      html: function () { return '<h1 class="q-h">Hi, I’m Vlad, your <em>AI Design Engineer.</em></h1><p class="q-p">What’s your name?</p><div class="q-gap"></div><label class="sr-only" for="q-name">Full name</label><input class="q-input" id="q-name" type="text" autocomplete="name" placeholder="Your full name" maxlength="60" value="' + esc(S.name) + '">'; },
+      html: function () { return '<h1 class="q-h">Hi, I’m Vlad, your <em>AI Design Engineer.</em></h1><p class="q-p">What should I call you?</p><div class="q-gap"></div><label class="sr-only" for="q-name">First name</label><input class="q-input" id="q-name" type="text" autocomplete="given-name" placeholder="Your first name" maxlength="40" value="' + esc(S.name) + '">'; },
       bind: function () { var i = document.getElementById('q-name'); i.addEventListener('input', function () { S.name = i.value.replace(/\s+/g, ' ').trimStart(); refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); } },
 
     { id: 'role', valid: function () { return !!S.role; },
@@ -106,8 +107,11 @@
     { id: 'setup', valid: function () { return !!S.tool; },
       html: function () { return '<h1 class="q-h">Let’s see if I’m a fit, ' + nm() + '.</h1><p class="q-p">Where does your team track tickets?</p><div class="q-gap"></div>' + single('tool', ['Jira', 'Linear', 'Asana', 'ClickUp', 'Monday', 'Trello', 'Notion', 'GitHub', 'Azure DevOps', 'Other'], true, true); } },
 
+    { id: 'devs', valid: function () { return !!S.devs; },
+      html: function () { return '<h1 class="q-h">Do you have developers on your team, ' + nm() + '?</h1><p class="q-p">I open pull requests for your developers to review and merge.</p><div class="q-gap"></div>' + single('devs', ['1–4 developers', '5–10 developers', '11–50 developers', 'No developers yet']); } },
+
     { id: 'email', cta: 'Book my call', valid: function () { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(S.email.trim()); },
-      html: function () { return '<h1 class="q-h">Great fit, ' + nm() + '. Let’s start with <em>3 free tasks.</em></h1><div class="q-gap"></div><label class="sr-only" for="q-email">Work email</label><input class="q-input" id="q-email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" value="' + esc(S.email) + '"><p class="q-hint q-hint--tight">We’ll only use it for your booking. No spam, ever.</p><p class="q-err" id="q-err" role="alert"></p>'; },
+      html: function () { return '<h1 class="q-h">Great fit, ' + nm() + '. Let’s start with <em>3 free tickets.</em></h1><div class="q-gap"></div><label class="sr-only" for="q-email">Work email</label><input class="q-input" id="q-email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" value="' + esc(S.email) + '"><p class="q-hint q-hint--tight">Please use your work email. We’ll only use it for your booking. No spam, ever.</p><p class="q-err" id="q-err" role="alert"></p>'; },
       bind: function () { var i = document.getElementById('q-email'); i.addEventListener('input', function () { S.email = i.value.trim(); document.getElementById('q-err').textContent = ''; refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); },
       leave: function () { return submitLead(); } },
 
@@ -136,7 +140,7 @@
         S[b.dataset.k] = b.dataset.v;
         main.querySelectorAll('[data-k="' + b.dataset.k + '"]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
         refresh();
-        if (sc.id === 'role') setTimeout(function () { go(1); }, 250);
+        if (sc.id === 'role' || sc.id === 'devs') setTimeout(function () { go(1); }, 250);
       });
     });
     main.querySelectorAll('[data-m]').forEach(function (b) {
@@ -179,7 +183,7 @@
   var FREE = /@(gmail|googlemail|yahoo|ymail|outlook|hotmail|live|msn|icloud|me|mac|aol|proton|protonmail|pm|gmx|mail|yandex|ya|inbox|zoho|qq|163|126)\./i;
   var leadSent = false;
   function payload() {
-    return { source: 'start-quiz', status: 'complete', first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' '), email: S.email.trim().toLowerCase(), role: S.role, pains: S.pains.join(', '), pm_tool: S.tool, answered: 'Quiz complete' };
+    return { source: 'start-quiz', status: 'complete', first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' '), email: S.email.trim().toLowerCase(), role: S.role, pains: S.pains.join(', '), pm_tool: S.tool, developers: S.devs, answered: 'Quiz complete' };
   }
   function submitLead() {
     var email = S.email.trim().toLowerCase();
@@ -188,7 +192,8 @@
     var done = function () {
       leadSent = true;
       if (window.lintrk) window.lintrk('track', { conversion_id: 31735682 });
-      if (window.gsTrack) gsTrack('Lead', { email: email, first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' ') }, { content_name: 'AI Design Engineer quiz' });
+      /* Meta learns from this event, so only buyer roles count as a Lead. */
+      if (window.gsTrack && BUYERS.indexOf(S.role) > -1) gsTrack('Lead', { email: email, first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' ') }, { content_name: 'AI Design Engineer quiz' });
       ev('quiz_lead');
       track('lead', 'email');
     };

@@ -4,7 +4,7 @@
 
 const STEPS = [
   ['name', 'Name'], ['role', 'Role'], ['pain', 'Pains'], ['stats', 'Stat screen'], ['cost', 'Cost comparison'],
-  ['future', 'How it works'], ['setup', 'Ticket tool'], ['email', 'Work email'], ['book', 'Calendar']
+  ['future', 'How it works'], ['setup', 'Ticket tool'], ['devs', 'Developers'], ['email', 'Work email'], ['book', 'Calendar']
 ];
 const PAIN_LABELS = {
   hiring: 'Still hiring a designer', cost: 'Two salaries for design and code', bottleneck: 'Designer is the bottleneck',
@@ -51,7 +51,7 @@ export async function onRequestGet({ request, env }) {
               GROUP_CONCAT(DISTINCT type || ':' || step) evs
        FROM events WHERE ts >= ? GROUP BY sid ORDER BY t0 DESC LIMIT 20000`).bind(since).all(),
     env.QUIZ_DB.prepare(
-      `SELECT sid, step, value FROM events WHERE ts >= ? AND type = 'complete' AND step IN ('role','pain','setup') ORDER BY ts`).bind(since).all()
+      `SELECT sid, step, value FROM events WHERE ts >= ? AND type = 'complete' AND step IN ('role','pain','setup','devs') ORDER BY ts`).bind(since).all()
   ]);
 
   const adsAll = new Map();
@@ -98,7 +98,7 @@ export async function onRequestGet({ request, env }) {
     }
     return { total, rows: [...m.entries()].sort((a, b) => b[1].n - a[1].n) };
   };
-  const roles = tally('role'), pains = tally('pain', true), tools = tally('setup');
+  const roles = tally('role'), pains = tally('pain', true), tools = tally('setup'), devs = tally('devs');
 
   // by ad, by device, by day
   const group = (keyFn) => {
@@ -116,7 +116,7 @@ export async function onRequestGet({ request, env }) {
   const dayFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
   const byDay = [...group((s) => dayFmt.format(new Date(s.t0))).entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
 
-  const html = page({ r, adFilter, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, byAd, byDev, byDay, has });
+  const html = page({ r, adFilter, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, byAd, byDev, byDay, has });
   return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } });
 }
 
@@ -158,7 +158,7 @@ function page(d) {
     for (const [id, label] of STEPS) if (has(s, 'view', id)) last = label;
     return last ? 'Left at: ' + last : 'Landed only';
   };
-  const recent = d.sessions.slice(0, 30).map((s) => `<tr><td>${esc(timeFmt.format(new Date(s.t0)))}</td><td>${esc(s.ad)}</td><td>${esc(s.ans?.role || '–')}</td><td>${esc(s.ans?.setup || '–')}</td><td>${esc(s.dev || '')}${s.ctry ? ' · ' + esc(s.ctry) : ''}</td><td>${esc(furthest(s))}</td></tr>`).join('');
+  const recent = d.sessions.slice(0, 30).map((s) => `<tr><td>${esc(timeFmt.format(new Date(s.t0)))}</td><td>${esc(s.ad)}</td><td>${esc(s.ans?.role || '–')}</td><td>${esc(s.ans?.devs || '–')}</td><td>${esc(s.dev || '')}${s.ctry ? ' · ' + esc(s.ctry) : ''}</td><td>${esc(furthest(s))}</td></tr>`).join('');
 
   const kpi = (label, n, sub) => `<div class="kpi"><div class="kpi__n">${n}</div><div class="kpi__l">${label}</div>${sub ? `<div class="kpi__s">${sub}</div>` : ''}</div>`;
 
@@ -207,6 +207,7 @@ ${kpi('Booked calls', d.booked.length, fmtPct(d.booked.length, d.leads.length) +
 <section class="card"><h2>Role</h2><p class="sub">${d.roles.total} answered. Designers are shown in grey.</p><div class="scroll">${ansTable(d.roles)}</div></section>
 <section class="card"><h2>Ticket tool</h2><p class="sub">${d.tools.total} answered.</p><div class="scroll">${ansTable(d.tools)}</div></section>
 </div>
+<div class="grid" style="margin-top:16px"><section class="card"><h2>Developers on the team</h2><p class="sub">${d.devs.total} answered.</p><div class="scroll">${ansTable(d.devs)}</div></section></div>
 <section class="card" style="margin-top:16px"><h2>Pains</h2><p class="sub">${d.pains.total} answered. People can pick several, so shares add up to more than 100%.</p><div class="scroll">${ansTable(d.pains, PAIN_LABELS)}</div></section>
 
 <section class="card"><h2>By ad</h2><p class="sub">Grouped by utm_content, so each Meta ad shows on its own row.</p><div class="scroll">${grpTable(d.byAd, 'Ad')}</div></section>
@@ -214,7 +215,7 @@ ${kpi('Booked calls', d.booked.length, fmtPct(d.booked.length, d.leads.length) +
 <section class="card"><h2>By device</h2><div class="scroll">${grpTable(d.byDev, 'Device')}</div></section>
 <section class="card"><h2>By day</h2><div class="scroll">${grpTable(d.byDay, 'Day')}</div></section>
 </div>
-<section class="card" style="margin-top:16px"><h2>Latest visits</h2><p class="sub">No names or emails are stored here. Leads with contact details still arrive by email.</p><div class="scroll"><table><thead><tr><th>When</th><th>Ad</th><th>Role</th><th>Tool</th><th>Device</th><th>Result</th></tr></thead><tbody>${recent || '<tr><td colspan="6" class="muted">No visits yet.</td></tr>'}</tbody></table></div></section>
+<section class="card" style="margin-top:16px"><h2>Latest visits</h2><p class="sub">No names or emails are stored here. Leads with contact details still arrive by email.</p><div class="scroll"><table><thead><tr><th>When</th><th>Ad</th><th>Role</th><th>Developers</th><th>Device</th><th>Result</th></tr></thead><tbody>${recent || '<tr><td colspan="6" class="muted">No visits yet.</td></tr>'}</tbody></table></div></section>
 <footer>Tracking started on 24 Nov 2026. Visits before then aren’t included. Bots and the preview copy are not counted.</footer>
 </div></body></html>`;
 }

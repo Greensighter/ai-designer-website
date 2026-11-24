@@ -3,8 +3,8 @@
  * only the screen, the answer chosen on choice screens, the ad tags and the device type. */
 
 const TYPES = new Set(['view', 'complete', 'back', 'lead', 'booked']);
-const STEPS = new Set(['name', 'role', 'nofit', 'pain', 'stats', 'cost', 'future', 'setup', 'email', 'book']);
-const ANSWERED = new Set(['role', 'pain', 'setup']); // the only steps whose value is kept
+const STEPS = new Set(['name', 'role', 'nofit', 'pain', 'stats', 'cost', 'future', 'setup', 'devs', 'email', 'book']);
+const ANSWERED = new Set(['role', 'pain', 'setup', 'devs']); // the only steps whose value is kept
 const clip = (v, n = 120) => (v == null ? null : String(v).slice(0, n) || null);
 
 export async function onRequestPost({ request, env }) {
