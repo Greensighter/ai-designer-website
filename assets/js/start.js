@@ -38,14 +38,14 @@
   };
   function dots(n, label) {
     var h = ''; for (var d = 0; d < 100; d++) h += '<i' + (d < n ? ' class="on" style="animation-delay:' + (d * 10) + 'ms"' : '') + '></i>';
-    return '<div class="q-big">' + label + '</div><div class="q-dots" aria-hidden="true">' + h + '</div><div class="q-dots__legend"><span><i class="on"></i>' + n + ' of 100</span></div>';
+    return '<div class="q-dots" aria-hidden="true">' + h + '</div><div class="q-dots__legend"><span><i class="on"></i>' + n + ' of 100</span></div>';
   }
   function donut(p, label) {
     var c = 2 * Math.PI * 52;
     return '<div class="q-ring"><svg class="q-donut" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--track)" stroke-width="12"/><circle class="q-donut__arc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="12" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" style="--off:' + (c * (1 - p / 100)).toFixed(1) + ';--full:' + c.toFixed(1) + '" transform="rotate(-90 60 60)"/></svg><div class="q-ring__n">' + label + '</div></div>';
   }
   function bars(label, rows) {
-    return '<div class="q-big">' + label + '</div><div class="q-bars" aria-hidden="true">' + rows.map(function (r) { return '<div class="q-bars__r' + (r.us ? ' is-us' : '') + '"><span class="q-bars__t"><i style="--w:' + r.w + '%"></i></span><span class="q-bars__k">' + r.k + '</span><span class="q-bars__v">' + r.v + '</span></div>'; }).join('') + '</div>';
+    return '<div class="q-bars" aria-hidden="true">' + rows.map(function (r) { return '<div class="q-bars__r' + (r.us ? ' is-us' : '') + '"><span class="q-bars__t"><i style="--w:' + r.w + '%"></i></span><span class="q-bars__k">' + r.k + '</span><span class="q-bars__v">' + r.v + '</span></div>'; }).join('') + '</div>';
   }
   var VIS = {
     bottleneck: function (n) { return dots(92, n); },
@@ -59,7 +59,7 @@
   /* ---------- screens ---------- */
   var SCREENS = [
     { id: 'name', cta: 'Nice to meet you', valid: function () { return S.name.trim().length > 0; },
-      html: function () { return '<h1 class="q-h">Hi, I’m your <em>AI Design Engineer.</em></h1><p class="q-p">I design in Figma and ship the code. What’s your name?</p><div class="q-gap"></div><label class="sr-only" for="q-name">Full name</label><input class="q-input" id="q-name" type="text" autocomplete="name" placeholder="Your full name" maxlength="60" value="' + esc(S.name) + '">'; },
+      html: function () { return '<h1 class="q-h">Hi, I’m your <em>AI Design Engineer.</em></h1><p class="q-p">What’s your name?</p><div class="q-gap"></div><label class="sr-only" for="q-name">Full name</label><input class="q-input" id="q-name" type="text" autocomplete="name" placeholder="Your full name" maxlength="60" value="' + esc(S.name) + '">'; },
       bind: function () { var i = document.getElementById('q-name'); i.addEventListener('input', function () { S.name = i.value.replace(/\s+/g, ' ').trimStart(); refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); } },
 
     { id: 'role', valid: function () { return !!S.role; },
@@ -68,10 +68,10 @@
     { id: 'pain', valid: function () { return S.pains.length > 0; },
       html: function () { return '<h1 class="q-h">What sounds like your team, ' + nm() + '?</h1><p class="q-hint">Pick any that apply.</p><div class="q-gap"></div>' + multi(); } },
 
-    { id: 'stats',
+    { id: 'stats', skip: function () { return !S.pains.some(function (k) { return k !== 'cost'; }); },
       html: function () {
-        var k = S.pains[0] || 'bottleneck', x = STATS[k];
-        return '<h1 class="q-h">You’re not alone.</h1><div class="q-info q-info--' + k + '">' + VIS[k](x.n) + '<p class="q-info__t">' + x.t + '</p>' + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div>';
+        var k = S.pains.filter(function (p) { return p !== 'cost'; })[0] || 'bottleneck', x = STATS[k];
+        return '<h1 class="q-h">You’re not alone.</h1><div class="q-info"><div class="q-big">' + x.n + '</div><p class="q-info__t">' + x.t + '</p>' + VIS[k]() + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div>';
       } },
 
     { id: 'cost',
@@ -80,16 +80,12 @@
         + '<div class="q-vbar is-us"><span class="q-vbar__col"><span class="q-vbar__v">$1,990</span><i style="--h:10%"></i></span><span class="q-vbar__k">AI Design Engineer</span><span class="q-vbar__s">Never off</span></div></div>'
         + '<p class="sr-only">In-house designer and developer cost $15,000 to $25,000 a month. The AI Design Engineer costs $1,990 a month.</p>'; } },
 
-    { id: 'future', cta: 'How does it work?',
-      html: function () { return '<h1 class="q-h">Imagine next Monday, ' + nm() + '.</h1><div class="q-gap"></div><div class="q-tl">'
-        + '<div class="q-tl__i"><div class="q-tl__d">Monday, 9:00</div><p class="q-tl__t">You assign a ticket, like to any teammate.</p><span class="q-tl__ic">' + ICON.jira + 'Ticket assigned</span></div>'
-        + '<div class="q-tl__i"><div class="q-tl__d">Tuesday</div><p class="q-tl__t">The screens are in your Figma, built with your design system and reviewed by a senior designer.</p><span class="q-tl__ic">' + ICON.figma + 'Designed in Figma</span></div>'
-        + '<div class="q-tl__i"><div class="q-tl__d">Wednesday</div><p class="q-tl__t">You approve, and a pull request is waiting for your developers.</p><span class="q-tl__ic">' + ICON.github + 'Pull request opened</span></div>'
-        + '</div><p class="q-p"><b>No hiring. No handoff. No waiting.</b></p>'; } },
-
-    { id: 'proof', cta: 'I’m interested',
-      html: function () { return '<h1 class="q-h">Same brief, two results</h1><p class="q-p">Your components, your patterns. Empty, loading and error states included.</p><div class="q-gap"></div><div class="q-tabs" role="tablist"><button type="button" class="q-tab q-tab--us" role="tab" aria-selected="true" data-shot="gs">AI Design Engineer</button><button type="button" class="q-tab" role="tab" aria-selected="false" data-shot="ai">Gen AI tools</button></div><div class="q-shot"><img id="q-shot" src="assets/img/vs/gs-2.webp" width="540" height="1169" alt="Finance app screen designed by the AI Design Engineer"></div>'; },
-      bind: function () { main.querySelectorAll('.q-tab').forEach(function (b) { b.addEventListener('click', function () { main.querySelectorAll('.q-tab').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); }); var us = b.dataset.shot === 'gs'; var img = document.getElementById('q-shot'); img.src = 'assets/img/vs/' + (us ? 'gs' : 'ai') + '-2.webp'; img.alt = us ? 'Finance app screen designed by the AI Design Engineer' : 'Finance app screen from a generic AI tool'; }); }); var pre = new Image(); pre.src = 'assets/img/vs/ai-2.webp'; } },
+    { id: 'future',
+      html: function () { return '<h1 class="q-h">Here’s how it works, ' + nm() + '.</h1><div class="q-gap"></div><div class="q-tl">'
+        + '<div class="q-tl__i"><div class="q-tl__d">Assign</div><p class="q-tl__t">You assign a ticket, like to any teammate.</p><span class="q-tl__ic">' + ICON.jira + 'Ticket assigned</span></div>'
+        + '<div class="q-tl__i"><div class="q-tl__d">Design</div><p class="q-tl__t">I design it in your Figma with your design system. A senior designer reviews every screen.</p><span class="q-tl__ic">' + ICON.figma + 'Designed in Figma</span></div>'
+        + '<div class="q-tl__i"><div class="q-tl__d">Code</div><p class="q-tl__t">You approve, and I open a pull request for your developers to review and merge.</p><span class="q-tl__ic">' + ICON.github + 'Pull request opened</span></div>'
+        + '</div>'; } },
 
     { id: 'setup', valid: function () { return !!S.tool; },
       html: function () { return '<h1 class="q-h">Let’s see if I’m a fit, ' + nm() + '.</h1><p class="q-p">Where does your team track tickets?</p><div class="q-gap"></div>' + single('tool', ['Jira', 'Linear', 'Asana', 'ClickUp', 'Monday', 'Trello', 'Notion', 'GitHub', 'Azure DevOps', 'Other'], true, true); } },
@@ -150,7 +146,7 @@
     if (busy) return;
     if (d > 0 && cur().valid && !cur().valid()) return;
     var leave = d > 0 && cur().leave ? cur().leave() : null;
-    var move = function () { i = Math.max(0, Math.min(SCREENS.length - 1, i + d)); render(); };
+    var move = function () { var n = i + d; while (n > 0 && n < SCREENS.length - 1 && SCREENS[n].skip && SCREENS[n].skip()) n += d; i = Math.max(0, Math.min(SCREENS.length - 1, n)); render(); };
     if (leave && leave.then) {
       busy = true; refresh(); nextLabel.textContent = 'Saving…';
       leave.then(function () { busy = false; move(); }, function (msg) { busy = false; nextLabel.textContent = 'Continue'; refresh(); var e = document.getElementById('q-err'); if (e) e.textContent = msg || 'Something went wrong. Try again.'; });

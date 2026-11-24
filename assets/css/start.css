@@ -214,3 +214,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .is-full .q-cal { margin: 0; border: 0; border-radius: 0; min-height: calc(100dvh - 56px); background: #fff; }
 .is-full .q-cal__loading { height: calc(100dvh - 56px); }
 @media (min-width: 640px) { .is-full .q-main { padding: 0; } }
+
+/* stats: number and sentence together, chart after */
+.q-info .q-big { margin-top: 20px; }
+.q-info .q-info__t { margin-top: 10px; }
+.q-info .q-dots, .q-info .q-bars, .q-info .q-ring { margin-top: 24px; }
+/* iOS: no tap flash or ghost outline between footer buttons */
+.q-back, .q-next, .q-opt, .q-tab { -webkit-tap-highlight-color: transparent; }
+.q-back:focus:not(:focus-visible), .q-next:focus:not(:focus-visible) { outline: none; }
+.q-next { transition: background-color .15s; will-change: auto; }
+.q-next:disabled { opacity: 1; background: #BDBDB8; }
