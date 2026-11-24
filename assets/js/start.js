@@ -20,7 +20,7 @@
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var first = function () { return (S.name.trim().split(/\s+/)[0] || ''); };
   var nm = function () { return esc(first() || 'there'); };
-  var BUYERS = ['Founder / CEO', 'CTO / Engineering lead', 'Product manager'];
+  var BUYERS = ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead'];
   var ev = function (n) { if (window.clarity) clarity('event', n); };
 
   /* Anonymous step analytics for /quiz-stats: screen views, completed steps, chosen answers. */
