@@ -18,7 +18,8 @@
   var S = { name: '', role: '', pains: [], tool: '', email: '' };
   var check = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-4.9" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
-  var nm = function () { return esc(S.name || 'there'); };
+  var first = function () { return (S.name.trim().split(/\s+/)[0] || ''); };
+  var nm = function () { return esc(first() || 'there'); };
   var ev = function (n) { if (window.clarity) clarity('event', n); };
 
   var PAINS = [
@@ -58,7 +59,7 @@
   /* ---------- screens ---------- */
   var SCREENS = [
     { id: 'name', cta: 'Nice to meet you', valid: function () { return S.name.trim().length > 0; },
-      html: function () { return '<h1 class="q-h">Hi, I’m your <em>AI Design Engineer.</em></h1><p class="q-p">I design in Figma and ship the code. What’s your name?</p><div class="q-gap"></div><label class="sr-only" for="q-name">First name</label><input class="q-input" id="q-name" type="text" autocomplete="given-name" placeholder="Your first name" maxlength="40" value="' + esc(S.name) + '">'; },
+      html: function () { return '<h1 class="q-h">Hi, I’m your <em>AI Design Engineer.</em></h1><p class="q-p">I design in Figma and ship the code. What’s your name?</p><div class="q-gap"></div><label class="sr-only" for="q-name">Full name</label><input class="q-input" id="q-name" type="text" autocomplete="name" placeholder="Your full name" maxlength="60" value="' + esc(S.name) + '">'; },
       bind: function () { var i = document.getElementById('q-name'); i.addEventListener('input', function () { S.name = i.value.replace(/\s+/g, ' ').trimStart(); refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); } },
 
     { id: 'role', valid: function () { return !!S.role; },
@@ -162,7 +163,7 @@
   var FREE = /@(gmail|googlemail|yahoo|ymail|outlook|hotmail|live|msn|icloud|me|mac|aol|proton|protonmail|pm|gmx|mail|yandex|ya|inbox|zoho|qq|163|126)\./i;
   var leadSent = false;
   function payload() {
-    return { source: 'start-quiz', status: 'complete', first_name: S.name.trim(), email: S.email.trim().toLowerCase(), role: S.role, pains: S.pains.join(', '), pm_tool: S.tool, answered: 'Quiz complete' };
+    return { source: 'start-quiz', status: 'complete', first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' '), email: S.email.trim().toLowerCase(), role: S.role, pains: S.pains.join(', '), pm_tool: S.tool, answered: 'Quiz complete' };
   }
   function submitLead() {
     var email = S.email.trim().toLowerCase();
@@ -171,7 +172,7 @@
     var done = function () {
       leadSent = true;
       if (window.lintrk) window.lintrk('track', { conversion_id: 31735682 });
-      if (window.gsTrack) gsTrack('Lead', { email: email, first_name: S.name.trim() }, { content_name: 'AI Design Engineer quiz' });
+      if (window.gsTrack) gsTrack('Lead', { email: email, first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' ') }, { content_name: 'AI Design Engineer quiz' });
       ev('quiz_lead');
     };
     if (!LEAD_ENDPOINT) { done(); return Promise.resolve(); }
@@ -199,8 +200,8 @@
     var onBooked = function () {
       if (booked) return; booked = true;
       ev('quiz_booked');
-      if (window.gsTrack) gsTrack('Schedule', { email: S.email.trim().toLowerCase(), first_name: S.name.trim() }, { content_name: 'AI Design Engineer demo call' });
-      setTimeout(function () { location.href = '/booked?name=' + encodeURIComponent(S.name.trim()); }, 1200);
+      if (window.gsTrack) gsTrack('Schedule', { email: S.email.trim().toLowerCase(), first_name: first(), last_name: S.name.trim().split(/\s+/).slice(1).join(' ') }, { content_name: 'AI Design Engineer demo call' });
+      setTimeout(function () { location.href = '/booked?name=' + encodeURIComponent(first()); }, 1200);
     };
     Cal.ns.quiz('on', { action: 'bookingSuccessfulV2', callback: onBooked });
     Cal.ns.quiz('on', { action: 'bookingSuccessful', callback: onBooked });
