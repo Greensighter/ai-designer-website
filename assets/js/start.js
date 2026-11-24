@@ -77,8 +77,7 @@
       html: function () { return '<p class="q-eyebrow">It’s the AI era, ' + nm() + '</p><h1 class="q-h">Still paying two full-time salaries for design and code?</h1>'
         + '<div class="q-vbars" aria-hidden="true"><div class="q-vbar"><span class="q-vbar__col"><span class="q-vbar__v">$15–25k</span><i style="--h:100%"></i></span><span class="q-vbar__k">In-house designer + developer</span><span class="q-vbar__s">Minus time off</span></div>'
         + '<div class="q-vbar is-us"><span class="q-vbar__col"><span class="q-vbar__v">$1,990</span><i style="--h:10%"></i></span><span class="q-vbar__k">AI Design Engineer</span><span class="q-vbar__s">Never off</span></div></div>'
-        + '<p class="sr-only">In-house designer and developer cost $15,000 to $25,000 a month. The AI Design Engineer costs $1,990 a month.</p>'
-        + '<div class="q-save"><small>What you could save</small><b>$13,000–23,000 a month</b></div>'; } },
+        + '<p class="sr-only">In-house designer and developer cost $15,000 to $25,000 a month. The AI Design Engineer costs $1,990 a month.</p>'; } },
 
     { id: 'future', cta: 'How does it work?',
       html: function () { return '<h1 class="q-h">Imagine next Monday, ' + nm() + '.</h1><div class="q-gap"></div><div class="q-tl">'
@@ -87,32 +86,25 @@
         + '<div class="q-tl__i"><div class="q-tl__d">Wednesday</div><p class="q-tl__t">You approve, and a pull request is waiting for your developers.</p><span class="q-tl__ic">' + ICON.github + 'Pull request opened</span></div>'
         + '</div><p class="q-p"><b>No hiring. No handoff. No waiting.</b></p>'; } },
 
-    { id: 'how', cta: 'Show me real work',
-      html: function () { return '<h1 class="q-h">I work like any teammate</h1><div class="q-gap"></div><div class="q-steps">'
-        + step(1, 'Assign', 'A ticket in Jira, Linear, Asana or ClickUp.')
-        + step(2, 'Get the design', 'In your Figma in 24–48 hours, with your design system.')
-        + step(3, 'Approve and merge', 'I ship the code as a pull request your developers review.')
-        + '</div><p class="q-hint">I’m in your Slack for questions, like anyone on your team.</p>'; } },
-
     { id: 'proof', cta: 'I’m interested',
       html: function () { return '<h1 class="q-h">Same brief, two results</h1><p class="q-p">Your components, your patterns. Empty, loading and error states included.</p><div class="q-gap"></div><div class="q-tabs" role="tablist"><button type="button" class="q-tab q-tab--us" role="tab" aria-selected="true" data-shot="gs">AI Design Engineer</button><button type="button" class="q-tab" role="tab" aria-selected="false" data-shot="ai">Gen AI tools</button></div><div class="q-shot"><img id="q-shot" src="assets/img/vs/gs-2.webp" width="540" height="1169" alt="Finance app screen designed by the AI Design Engineer"></div>'; },
       bind: function () { main.querySelectorAll('.q-tab').forEach(function (b) { b.addEventListener('click', function () { main.querySelectorAll('.q-tab').forEach(function (x) { x.setAttribute('aria-selected', x === b ? 'true' : 'false'); }); var us = b.dataset.shot === 'gs'; var img = document.getElementById('q-shot'); img.src = 'assets/img/vs/' + (us ? 'gs' : 'ai') + '-2.webp'; img.alt = us ? 'Finance app screen designed by the AI Design Engineer' : 'Finance app screen from a generic AI tool'; }); }); var pre = new Image(); pre.src = 'assets/img/vs/ai-2.webp'; } },
 
     { id: 'setup', valid: function () { return !!S.tool; },
-      html: function () { return '<h1 class="q-h">Let’s see if I’m a fit, ' + nm() + '.</h1><p class="q-p">Where does your team track tickets?</p><div class="q-gap"></div>' + single('tool', ['Jira', 'Linear', 'Asana', 'ClickUp', 'Other'], true, true); } },
+      html: function () { return '<h1 class="q-h">Let’s see if I’m a fit, ' + nm() + '.</h1><p class="q-p">Where does your team track tickets?</p><div class="q-gap"></div>' + single('tool', ['Jira', 'Linear', 'Asana', 'ClickUp', 'Monday', 'Trello', 'Notion', 'GitHub', 'Azure DevOps', 'Other'], true, true); } },
 
     { id: 'email', cta: 'Book my call', valid: function () { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(S.email.trim()); },
       html: function () { return '<h1 class="q-h">Great fit, ' + nm() + '. Let’s start with <em>3 free tasks.</em></h1><div class="q-gap"></div><label class="sr-only" for="q-email">Work email</label><input class="q-input" id="q-email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" value="' + esc(S.email) + '"><p class="q-err" id="q-err" role="alert"></p><p class="q-hint">No credit card required.</p>'; },
       bind: function () { var i = document.getElementById('q-email'); i.addEventListener('input', function () { S.email = i.value.trim(); document.getElementById('q-err').textContent = ''; refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); },
       leave: function () { return submitLead(); } },
 
-    { id: 'book', foot: false,
-      html: function () { return '<h1 class="q-h">Pick a time, ' + nm() + '.</h1><p class="q-p">30 minutes. We’ll look at your product, and I’ll show you real work on a ticket like yours.</p><div class="q-cal" id="q-cal"><div class="q-cal__loading"><b aria-hidden="true"></b>Loading calendar…</div></div><button type="button" class="q-back" id="q-back2" aria-label="Back" style="margin-top:14px">' + ICON.back + '</button>'; },
-      bind: function () { document.getElementById('q-back2').addEventListener('click', function () { go(-1); }); embedCal(); } }
+    { id: 'book', foot: false, full: true,
+      html: function () { return '<h1 class="sr-only">Pick a time for your call</h1><div class="q-cal" id="q-cal"><div class="q-cal__loading"><b aria-hidden="true"></b>Loading calendar…</div></div>'; },
+      bind: function () { embedCal(); } }
   ];
 
   function single(key, opts, chips, logos) {
-    return '<div class="q-opts' + (chips ? ' q-opts--chips' : '') + (logos ? ' q-opts--logos' : '') + '" role="group">' + opts.map(function (o) { var ic = logos ? '<span class="q-opt__logo">' + (ICON['t-' + o.toLowerCase()] || '') + '</span>' : ''; return '<button type="button" class="q-opt" data-k="' + key + '" data-v="' + esc(o) + '" aria-pressed="' + (S[key] === o) + '"><span class="q-opt__box">' + check + '</span>' + ic + esc(o) + '</button>'; }).join('') + '</div>';
+    return '<div class="q-opts' + (chips ? ' q-opts--chips' : '') + (logos ? ' q-opts--logos' : '') + '" role="group">' + opts.map(function (o) { var ic = logos ? '<span class="q-opt__logo">' + (ICON['t-' + o.toLowerCase().replace(/\s+/g, '')] || '') + '</span>' : ''; return '<button type="button" class="q-opt" data-k="' + key + '" data-v="' + esc(o) + '" aria-pressed="' + (S[key] === o) + '"><span class="q-opt__box">' + check + '</span>' + ic + esc(o) + '</button>'; }).join('') + '</div>';
   }
   function multi() {
     return '<div class="q-opts q-opts--multi" role="group">' + PAINS.map(function (p) { return '<button type="button" class="q-opt" data-m="' + p.id + '" aria-pressed="' + (S.pains.indexOf(p.id) > -1) + '"><span class="q-opt__box">' + check + '</span>' + p.t + '</button>'; }).join('') + '</div>';
@@ -143,6 +135,7 @@
     });
     if (sc.bind) sc.bind();
     foot.hidden = sc.foot === false;
+    document.body.classList.toggle('is-full', !!sc.full);
     back.hidden = i === 0;
     nextLabel.textContent = 'Continue';
     count.innerHTML = '<b>' + (i + 1) + '</b>/' + SCREENS.length;
