@@ -63,7 +63,12 @@
       bind: function () { var i = document.getElementById('q-name'); i.addEventListener('input', function () { S.name = i.value.replace(/\s+/g, ' ').trimStart(); refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); } },
 
     { id: 'role', valid: function () { return !!S.role; },
-      html: function () { return '<h1 class="q-h">Nice to meet you, ' + nm() + '. What do you do?</h1><div class="q-gap"></div>' + single('role', ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead', 'Other']); } },
+      html: function () { return '<h1 class="q-h">Nice to meet you, ' + nm() + '. What do you do?</h1><div class="q-gap"></div>' + single('role', ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead', 'Designer / freelancer', 'Other']); } },
+
+    { id: 'nofit', foot: false, skip: function () { return S.role !== 'Designer / freelancer'; },
+      html: function () { return '<p class="q-eyebrow">Thanks, ' + nm() + '</p><h1 class="q-h">I’m built for <em>product teams.</em></h1><p class="q-p">Founders, CTOs and product managers assign me tickets, and I deliver reviewed design and code as a pull request. If a team you work with could use that, send them my way.</p><div class="q-gap"></div>'
+        + '<a class="q-book-link" href="/?utm_source=quiz&amp;utm_content=designer">See how Vlad AI works</a><button type="button" class="q-textbtn" id="q-change">Change my answer</button>'; },
+      bind: function () { document.getElementById('q-change').addEventListener('click', function () { S.role = ''; go(-1); }); } },
 
     { id: 'pain', valid: function () { return S.pains.length > 0; },
       html: function () { return '<h1 class="q-h">What sounds like your team, ' + nm() + '?</h1><p class="q-hint">Pick any that apply.</p><div class="q-gap"></div>' + multi(); } },
@@ -112,6 +117,7 @@
 
   /* ---------- engine ---------- */
   var i = 0, busy = false;
+  var NOFIT = SCREENS.map(function (x) { return x.id; }).indexOf('nofit');
   var cur = function () { return SCREENS[i]; };
   function render() {
     var sc = cur();
@@ -137,8 +143,9 @@
     document.body.classList.toggle('is-full', !!sc.full);
     back.hidden = i === 0;
     nextLabel.textContent = 'Continue';
-    count.innerHTML = '<b>' + (i + 1) + '</b>/' + SCREENS.length;
-    bar.style.width = ((i + 1) / SCREENS.length * 100) + '%';
+    var total = SCREENS.length - 1, pos = i + (i > NOFIT ? 0 : 1);
+    count.innerHTML = sc.id === 'nofit' ? '' : '<b>' + pos + '</b>/' + total;
+    bar.style.width = (sc.id === 'nofit' ? 100 : pos / total * 100) + '%';
     refresh();
     window.scrollTo(0, 0);
     ev('quiz_' + sc.id);
