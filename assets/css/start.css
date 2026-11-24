@@ -224,3 +224,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 .q-back:focus:not(:focus-visible), .q-next:focus:not(:focus-visible) { outline: none; }
 .q-next { transition: background-color .15s; will-change: auto; }
 .q-next:disabled { opacity: 1; background: #BDBDB8; }
+
+.q-info--ring .q-ring { margin-top: 28px; }
+.q-info--ring .q-info__t { margin-top: 20px; }

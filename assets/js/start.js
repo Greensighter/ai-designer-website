@@ -71,7 +71,9 @@
     { id: 'stats', skip: function () { return !S.pains.some(function (k) { return k !== 'cost'; }); },
       html: function () {
         var k = S.pains.filter(function (p) { return p !== 'cost'; })[0] || 'bottleneck', x = STATS[k];
-        return '<h1 class="q-h">You’re not alone.</h1><div class="q-info"><div class="q-big">' + x.n + '</div><p class="q-info__t">' + x.t + '</p>' + VIS[k]() + (x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '') + '</div>';
+        var src = x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '';
+        if (k === 'rebuild') return '<h1 class="q-h">You’re not alone.</h1><div class="q-info q-info--ring">' + VIS[k](x.n) + '<p class="q-info__t">' + x.t + '</p>' + src + '</div>';
+        return '<h1 class="q-h">You’re not alone.</h1><div class="q-info"><div class="q-big">' + x.n + '</div><p class="q-info__t">' + x.t + '</p>' + VIS[k](x.n) + src + '</div>';
       } },
 
     { id: 'cost',
