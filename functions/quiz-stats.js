@@ -76,6 +76,7 @@ export async function onRequestGet({ request, env }) {
   const leads = sessions.filter((s) => has(s, 'lead', 'email'));
   const booked = sessions.filter((s) => has(s, 'booked', 'book'));
   const screened = sessions.filter((s) => has(s, 'view', 'nofit'));
+  const noDevs = sessions.filter((s) => has(s, 'view', 'nodevs'));
 
   // funnel
   const funnel = STEPS.map(([id, label]) => {
@@ -116,7 +117,7 @@ export async function onRequestGet({ request, env }) {
   const dayFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
   const byDay = [...group((s) => dayFmt.format(new Date(s.t0))).entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
 
-  const html = page({ r, adFilter, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, byAd, byDev, byDay, has });
+  const html = page({ r, adFilter, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, noDevs, byAd, byDev, byDay, has });
   return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } });
 }
 
@@ -154,6 +155,7 @@ function page(d) {
   const furthest = (s) => {
     if (has(s, 'booked', 'book')) return 'Booked a call';
     if (has(s, 'view', 'nofit')) return 'Screened out (designer)';
+    if (has(s, 'view', 'nodevs')) return 'Screened out (no developers)';
     let last = '';
     for (const [id, label] of STEPS) if (has(s, 'view', id)) last = label;
     return last ? 'Left at: ' + last : 'Landed only';
@@ -196,6 +198,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:20px}
 ${kpi('Started the quiz', N, `${d.sessions.length} visits in total`)}
 ${kpi('Answered role', funnel[1].done, fmtPct(funnel[1].done, N) + ' of starts')}
 ${kpi('Designers screened out', d.screened.length, fmtPct(d.screened.length, funnel[1].done) + ' of role answers')}
+${kpi('No developers', d.noDevs.length, 'sent to the polite ending')}
 ${kpi('Leads (work email)', d.leads.length, fmtPct(d.leads.length, N) + ' of starts')}
 ${kpi('Booked calls', d.booked.length, fmtPct(d.booked.length, d.leads.length) + ' of leads')}
 </div>

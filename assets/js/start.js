@@ -110,6 +110,9 @@
     { id: 'devs', valid: function () { return !!S.devs; },
       html: function () { return '<h1 class="q-h">Do you have developers on your team, ' + nm() + '?</h1><p class="q-p">I open pull requests for your developers to review and merge.</p><div class="q-gap"></div>' + single('devs', ['1–4 developers', '5–10 developers', '11–50 developers', 'No developers yet']); } },
 
+    { id: 'nodevs', foot: false, skip: function () { return S.devs !== 'No developers yet'; },
+      html: function () { return '<h1 class="q-h">I work best with <em>teams that have developers.</em></h1><p class="q-p">I deliver design and code as a pull request for your developers to review and merge. Once you have a developer on the team, come back and I’ll start with 3 free tickets.</p>'; } },
+
     { id: 'email', cta: 'Book my call', valid: function () { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(S.email.trim()); },
       html: function () { return '<h1 class="q-h">Great fit, ' + nm() + '. Let’s start with <em>3 free tickets.</em></h1><div class="q-gap"></div><label class="sr-only" for="q-email">Work email</label><input class="q-input" id="q-email" type="email" inputmode="email" autocomplete="email" placeholder="you@company.com" value="' + esc(S.email) + '"><p class="q-hint q-hint--tight">Please use your work email. We’ll only use it for your booking. No spam, ever.</p><p class="q-err" id="q-err" role="alert"></p>'; },
       bind: function () { var i = document.getElementById('q-email'); i.addEventListener('input', function () { S.email = i.value.trim(); document.getElementById('q-err').textContent = ''; refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); },
@@ -130,7 +133,8 @@
 
   /* ---------- engine ---------- */
   var i = 0, busy = false;
-  var NOFIT = SCREENS.map(function (x) { return x.id; }).indexOf('nofit');
+  var ENDS = ['nofit', 'nodevs']; /* polite endings, not counted as steps */
+  var isEnd = function (id) { return ENDS.indexOf(id) > -1; };
   var cur = function () { return SCREENS[i]; };
   function render() {
     var sc = cur();
@@ -156,9 +160,9 @@
     document.body.classList.toggle('is-full', !!sc.full);
     back.hidden = i === 0;
     nextLabel.textContent = 'Continue';
-    var total = SCREENS.length - 1, pos = i + (i > NOFIT ? 0 : 1);
-    count.innerHTML = sc.id === 'nofit' ? '' : '<b>' + pos + '</b>/' + total;
-    bar.style.width = (sc.id === 'nofit' ? 100 : pos / total * 100) + '%';
+    var total = SCREENS.filter(function (x) { return !isEnd(x.id); }).length, pos = SCREENS.slice(0, i + 1).filter(function (x) { return !isEnd(x.id); }).length;
+    count.innerHTML = isEnd(sc.id) ? '' : '<b>' + pos + '</b>/' + total;
+    bar.style.width = (isEnd(sc.id) ? 100 : pos / total * 100) + '%';
     refresh();
     window.scrollTo(0, 0);
     ev('quiz_' + sc.id);
