@@ -20,6 +20,7 @@
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var first = function () { return (S.name.trim().split(/\s+/)[0] || ''); };
   var nm = function () { return esc(first() || 'there'); };
+  var started = false; /* 'start' fires once, on the first letter typed into the name field */
   var BUYERS = ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead'];
   var ev = function (n) { if (window.clarity) clarity('event', n); };
 
@@ -72,7 +73,7 @@
   var SCREENS = [
     { id: 'name', cta: 'Nice to meet you', valid: function () { return S.name.trim().length > 0; },
       html: function () { return '<h1 class="q-h">Hi, I’m Vlad, your <em>AI Design Engineer.</em></h1><p class="q-p">What should I call you?</p><div class="q-gap"></div><label class="sr-only" for="q-name">First name</label><input class="q-input" id="q-name" type="text" autocomplete="given-name" placeholder="Your first name" maxlength="40" value="' + esc(S.name) + '">'; },
-      bind: function () { var i = document.getElementById('q-name'); i.addEventListener('input', function () { S.name = i.value.replace(/\s+/g, ' ').trimStart(); refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); } },
+      bind: function () { var i = document.getElementById('q-name'); i.addEventListener('input', function () { S.name = i.value.replace(/\s+/g, ' ').trimStart(); if (!started && S.name) { started = true; track('start', 'name'); } refresh(); }); i.addEventListener('keydown', function (e) { if (e.key === 'Enter' && cur().valid()) go(1); }); setTimeout(function () { i.focus(); }, 50); } },
 
     { id: 'role', valid: function () { return !!S.role; },
       html: function () { return '<h1 class="q-h">Nice to meet you, ' + nm() + '. What do you do?</h1><div class="q-gap"></div>' + single('role', ['Founder / CEO', 'CTO / Engineering lead', 'Product manager', 'Design lead', 'Designer / freelancer', 'Other']); } },

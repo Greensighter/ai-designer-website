@@ -71,7 +71,8 @@ export async function onRequestGet({ request, env }) {
   }
 
   const has = (s, t, st) => s.ev.has(`${t}:${st}`);
-  const started = sessions.filter((s) => has(s, 'view', 'name'));
+  const visits = sessions.filter((s) => has(s, 'view', 'name'));
+  const started = sessions.filter((s) => has(s, 'start', 'name'));
   const N = started.length;
   const leads = sessions.filter((s) => has(s, 'lead', 'email'));
   const booked = sessions.filter((s) => has(s, 'booked', 'book'));
@@ -106,7 +107,7 @@ export async function onRequestGet({ request, env }) {
     const m = new Map();
     for (const s of sessions) {
       const k = keyFn(s); const e = m.get(k) || { visits: 0, started: 0, role: 0, screened: 0, leads: 0, booked: 0 };
-      e.visits++; if (has(s, 'view', 'name')) e.started++; if (has(s, 'complete', 'role')) e.role++;
+      if (has(s, 'view', 'name')) e.visits++; if (has(s, 'start', 'name')) e.started++; if (has(s, 'complete', 'role')) e.role++;
       if (has(s, 'view', 'nofit')) e.screened++; if (has(s, 'lead', 'email')) e.leads++; if (has(s, 'booked', 'book')) e.booked++;
       m.set(k, e);
     }
@@ -117,7 +118,7 @@ export async function onRequestGet({ request, env }) {
   const dayFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
   const byDay = [...group((s) => dayFmt.format(new Date(s.t0))).entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
 
-  const html = page({ r, adFilter, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, noDevs, byAd, byDev, byDay, has });
+  const html = page({ r, adFilter, visits, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, noDevs, byAd, byDev, byDay, has });
   return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } });
 }
 
@@ -139,7 +140,7 @@ function page(d) {
   const funnelRows = funnel.map((f, idx) => {
     const lost = f.reached - f.done;
     const note = f.id === 'stats' ? ' <span class="muted">(only if a non-cost pain was picked)</span>' : '';
-    return `<tr><td>${idx + 1}. ${esc(f.label)}${note}</td><td class="n">${f.reached}</td><td class="viz">${bar(f.reached, fmax)}</td><td class="n">${fmtPct(f.reached, N)}</td><td class="n">${f.done}</td><td class="n ${lost > 0 ? 'neg' : ''}">${f.reached ? lost + ' (' + pct(lost, f.reached) + '%)' : '–'}</td></tr>`;
+    return `<tr><td>${idx + 1}. ${esc(f.label)}${note}</td><td class="n">${f.reached}</td><td class="viz">${bar(f.reached, fmax)}</td><td class="n">${f.id === 'name' ? '–' : fmtPct(f.reached, N)}</td><td class="n">${f.done}</td><td class="n ${lost > 0 ? 'neg' : ''}">${f.reached ? lost + ' (' + pct(lost, f.reached) + '%)' : '–'}</td></tr>`;
   }).join('');
 
   const ansTable = (t, labels = {}) => {
@@ -178,7 +179,7 @@ h2{font-size:17px;margin:0 0 4px}.sub{color:var(--muted);font-size:13.5px;margin
 .pill{padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-size:13.5px;font-weight:500}
 .pill.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 select{font:inherit;font-size:13.5px;padding:7px 10px;border-radius:10px;border:1px solid var(--line);background:var(--card);max-width:260px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:18px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px}
 .kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
 .kpi__n{font-size:30px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}.kpi__l{font-weight:600;font-size:13.5px}.kpi__s{color:var(--muted);font-size:12.5px;margin-top:2px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 20px 12px;margin-bottom:16px}
@@ -195,7 +196,8 @@ footer{color:var(--muted);font-size:12.5px;margin-top:20px}
 <input type="hidden" name="r" value="${esc(d.r)}"><select name="ad" onchange="this.form.submit()" aria-label="Filter by ad"><option value="">All traffic</option>${d.ads.map(([k, n]) => `<option value="${esc(k)}"${k === d.adFilter ? ' selected' : ''}>${esc(k)} (${n})</option>`).join('')}</select></form></header>
 
 <div class="kpis">
-${kpi('Started the quiz', N, `${d.sessions.length} visits in total`)}
+${kpi('Quiz page visits', d.visits.length, 'opened /quiz')}
+${kpi('Started the quiz', N, fmtPct(N, d.visits.length) + ' of visits typed their name')}
 ${kpi('Answered role', funnel[1].done, fmtPct(funnel[1].done, N) + ' of starts')}
 ${kpi('Designers screened out', d.screened.length, fmtPct(d.screened.length, funnel[1].done) + ' of role answers')}
 ${kpi('No developers', d.noDevs.length, 'sent to the polite ending')}
@@ -203,7 +205,7 @@ ${kpi('Leads (work email)', d.leads.length, fmtPct(d.leads.length, N) + ' of sta
 ${kpi('Booked calls', d.booked.length, fmtPct(d.booked.length, d.leads.length) + ' of leads')}
 </div>
 
-<section class="card"><h2>Step by step</h2><p class="sub">Reached = saw the screen. Completed = moved forward from it. Lost = reached but never completed.</p>
+<section class="card"><h2>Step by step</h2><p class="sub">Reached = saw the screen. Completed = moved forward from it. Lost = reached but never completed. Step 1 “reached” is every page visit; “Of starts” counts people who typed their name.</p>
 <div class="scroll"><table><thead><tr><th>Step</th><th class="n">Reached</th><th></th><th class="n">Of starts</th><th class="n">Completed</th><th class="n">Lost here</th></tr></thead><tbody>${funnelRows}</tbody></table></div></section>
 
 <div class="grid">
