@@ -1,4 +1,4 @@
-/* Greensighter onboarding quiz (/start).
+/* Greensighter onboarding quiz (/quiz).
  * One question per screen. Lead fires when the email is sent; Schedule fires once
  * when the Cal.com booking succeeds, then the visitor goes to /booked. */
 (function () {
