@@ -227,3 +227,6 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outlin
 
 .q-info--ring .q-ring { margin-top: 28px; }
 .q-info--ring .q-info__t { margin-top: 20px; }
+
+/* keep both bars on one baseline when a label wraps */
+.q-vbar__k { min-height: 2.6em; }
