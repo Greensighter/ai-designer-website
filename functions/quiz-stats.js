@@ -137,7 +137,8 @@ function page(d) {
   const fmax = Math.max(1, ...funnel.map((f) => f.reached));
   const timeFmt = new Intl.DateTimeFormat('en-GB', { timeZone: TZ, day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 
-  const funnelRows = funnel.map((f, idx) => {
+  const EXPLAINERS = ['stats', 'cost', 'future']; // hidden in the quiz for now: show them only if they have data
+  const funnelRows = funnel.filter((f) => !EXPLAINERS.includes(f.id) || f.reached > 0).map((f, idx) => {
     const lost = f.reached - f.done;
     const note = f.id === 'stats' ? ' <span class="muted">(only if a non-cost pain was picked)</span>' : '';
     return `<tr><td>${idx + 1}. ${esc(f.label)}${note}</td><td class="n">${f.reached}</td><td class="viz">${bar(f.reached, fmax)}</td><td class="n">${f.id === 'name' ? '–' : fmtPct(f.reached, N)}</td><td class="n">${f.done}</td><td class="n ${lost > 0 ? 'neg' : ''}">${f.reached ? lost + ' (' + pct(lost, f.reached) + '%)' : '–'}</td></tr>`;

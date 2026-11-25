@@ -84,7 +84,7 @@
     { id: 'pain', valid: function () { return S.pains.length > 0; },
       html: function () { return '<h1 class="q-h">What sounds like your team, ' + nm() + '?</h1><p class="q-hint">Pick any that apply.</p><div class="q-gap"></div>' + multi(); } },
 
-    { id: 'stats', skip: function () { return !S.pains.some(function (k) { return k !== 'cost'; }); },
+    { id: 'stats', explainer: true, skip: function () { return !S.pains.some(function (k) { return k !== 'cost'; }); },
       html: function () {
         var k = S.pains.filter(function (p) { return p !== 'cost'; })[0] || 'bottleneck', x = STATS[k];
         var src = x.s ? '<p class="q-stat__s">Source: ' + x.s + '</p>' : '';
@@ -92,13 +92,13 @@
         return '<h1 class="q-h">You’re not alone.</h1><div class="q-info"><div class="q-big">' + x.n + '</div><p class="q-info__t">' + x.t + '</p>' + VIS[k](x.n) + src + '</div>';
       } },
 
-    { id: 'cost',
+    { id: 'cost', explainer: true,
       html: function () { return '<p class="q-eyebrow">It’s the AI era, ' + nm() + '</p><h1 class="q-h">Still paying two full-time salaries for design and code?</h1>'
         + '<div class="q-vbars" aria-hidden="true"><div class="q-vbar"><span class="q-vbar__col"><span class="q-vbar__v">$15–25k</span><i style="--h:100%"></i></span><span class="q-vbar__k">In-house designer + developer</span><span class="q-vbar__s">Minus time off</span></div>'
         + '<div class="q-vbar is-us"><span class="q-vbar__col"><span class="q-vbar__v">$1,990</span><i style="--h:10%"></i></span><span class="q-vbar__k">Vlad AI</span><span class="q-vbar__s">Never off</span></div></div>'
         + '<p class="sr-only">In-house designer and developer cost $15,000 to $25,000 a month. Vlad AI costs $1,990 a month.</p>'; } },
 
-    { id: 'future',
+    { id: 'future', explainer: true,
       html: function () { return '<h1 class="q-h">Here’s how it works, ' + nm() + '.</h1><div class="q-gap"></div><div class="q-tl">'
         + '<div class="q-tl__i"><div class="q-tl__d">Assign</div><p class="q-tl__t">You assign a ticket, like to any teammate.</p><span class="q-tl__ic">' + ICON.jira + 'Ticket assigned</span></div>'
         + '<div class="q-tl__i"><div class="q-tl__d">Design</div><p class="q-tl__t">I design it in your Figma with your design system. A senior designer reviews every screen.</p><span class="q-tl__ic">' + ICON.figma + 'Designed in Figma</span></div>'
@@ -134,6 +134,15 @@
 
   /* ---------- engine ---------- */
   var i = 0, busy = false;
+  /* Explainer screens (stats, cost, future) are hidden now that visitors arrive from the homepage,
+     which already explains the product. Set SHOW_EXPLAINERS to true to bring them back. */
+  var SHOW_EXPLAINERS = false;
+  SCREENS.forEach(function (sc) {
+    if (!sc.explainer) return;
+    var own = sc.skip;
+    sc.skip = function () { return !SHOW_EXPLAINERS || (own ? own() : false); };
+  });
+  var hidden = function (x) { return x.explainer && !SHOW_EXPLAINERS; };
   var ENDS = ['nofit', 'nodevs']; /* polite endings, not counted as steps */
   var isEnd = function (id) { return ENDS.indexOf(id) > -1; };
   var cur = function () { return SCREENS[i]; };
@@ -161,7 +170,7 @@
     document.body.classList.toggle('is-full', !!sc.full);
     back.hidden = i === 0;
     nextLabel.textContent = 'Continue';
-    var total = SCREENS.filter(function (x) { return !isEnd(x.id); }).length, pos = SCREENS.slice(0, i + 1).filter(function (x) { return !isEnd(x.id); }).length;
+    var total = SCREENS.filter(function (x) { return !isEnd(x.id) && !hidden(x); }).length, pos = SCREENS.slice(0, i + 1).filter(function (x) { return !isEnd(x.id) && !hidden(x); }).length;
     count.innerHTML = isEnd(sc.id) ? '' : '<b>' + pos + '</b>/' + total;
     bar.style.width = (isEnd(sc.id) ? 100 : pos / total * 100) + '%';
     refresh();
