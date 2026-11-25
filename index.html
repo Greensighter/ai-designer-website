@@ -70,6 +70,11 @@
         ['utm_source', 'utm_campaign', 'utm_content'].forEach(function (k) { o[k] = q.get(k) || ''; });
         if (o.utm_source || o.utm_content) sessionStorage.setItem('q_utm', JSON.stringify(o));
         else o = JSON.parse(sessionStorage.getItem('q_utm') || 'null') || o;
+        /* Also put the tags on the /quiz links, in case the in-app browser drops sessionStorage between pages. */
+        if (o.utm_source || o.utm_content) document.addEventListener('DOMContentLoaded', function () {
+          var t = new URLSearchParams(); ['utm_source', 'utm_campaign', 'utm_content'].forEach(function (k) { if (o[k]) t.set(k, o[k]); });
+          [].forEach.call(document.querySelectorAll('a[href="/quiz"]'), function (el) { el.href = '/quiz?' + t.toString(); });
+        });
         if (!/(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.hostname)) return;
         var sid = sessionStorage.getItem('q_sid');
         if (!sid) { sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sessionStorage.setItem('q_sid', sid); }
