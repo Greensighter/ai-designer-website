@@ -54,6 +54,24 @@
     </script>
     <!-- End Meta Pixel Code -->
     <script src="assets/js/track.js?v=2" defer></script>
+    <script>/* /quiz-stats: who reached this page after booking, and who clicked into the video. */
+    (function () {
+      try {
+        if (!/(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.hostname)) return;
+        var sid = sessionStorage.getItem('q_sid'); if (!sid) return; /* only visitors who came through the quiz */
+        var o = JSON.parse(sessionStorage.getItem('q_utm') || 'null') || {};
+        var send = function (type) {
+          var body = JSON.stringify({ sid: sid, type: type, step: 'video', utm_source: o.utm_source || '', utm_campaign: o.utm_campaign || '', utm_content: o.utm_content || '' });
+          if (!(navigator.sendBeacon && navigator.sendBeacon('/api/qe', new Blob([body], { type: 'application/json' })))) fetch('/api/qe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true });
+        };
+        send('view');
+        /* A click into the Loom iframe moves focus to it: count that once as "clicked the video". */
+        var clicked = false;
+        window.addEventListener('blur', function () {
+          setTimeout(function () { var f = document.activeElement; if (!clicked && f && f.tagName === 'IFRAME') { clicked = true; send('complete'); } }, 0);
+        });
+      } catch (e) {}
+    })();</script>
 </head>
 <body>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1083937427973647&ev=PageView&noscript=1" /></noscript>

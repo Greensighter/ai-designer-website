@@ -4,7 +4,7 @@
 
 const STEPS = [
   ['home', 'Landing page'], ['name', 'Name'], ['role', 'Role'], ['pain', 'Pains'], ['stats', 'Stat screen'], ['cost', 'Cost comparison'],
-  ['future', 'How it works'], ['setup', 'Ticket tool'], ['devs', 'Developers'], ['email', 'Work email'], ['book', 'Calendar']
+  ['future', 'How it works'], ['setup', 'Ticket tool'], ['devs', 'Developers'], ['email', 'Work email'], ['book', 'Calendar'], ['video', 'Video page (after booking)']
 ];
 const PAIN_LABELS = {
   hiring: 'Still hiring a designer', cost: 'Two salaries for design and code', bottleneck: 'Designer is the bottleneck',
@@ -158,6 +158,8 @@ function page(d) {
     `<tr><td>${esc(k)}</td><td class="n">${v.landing}</td><td class="n">${v.visits}</td><td class="n">${v.started}</td><td class="n">${v.role}</td><td class="n">${v.screened}</td><td class="n">${v.leads}</td><td class="n">${v.booked}</td><td class="n">${fmtPct(v.leads, v.started)}</td></tr>`).join('') || '<tr><td colspan="9" class="muted">No data yet.</td></tr>'}</tbody></table>`;
 
   const furthest = (s) => {
+    if (has(s, 'complete', 'video')) return 'Booked, clicked the video';
+    if (has(s, 'view', 'video')) return 'Booked, saw the video page';
     if (has(s, 'booked', 'book')) return 'Booked a call';
     if (has(s, 'view', 'nofit')) return 'Screened out (designer)';
     if (has(s, 'view', 'nodevs')) return 'Screened out (no developers)';
@@ -210,7 +212,7 @@ ${kpi('Leads (work email)', d.leads.length, fmtPct(d.leads.length, N) + ' of sta
 ${kpi('Booked calls', d.booked.length, fmtPct(d.booked.length, d.leads.length) + ' of leads')}
 </div>
 
-<section class="card"><h2>Step by step</h2><p class="sub">Reached = saw the screen. Completed = moved forward from it. Lost = reached but never completed. For the landing page, completed = opened the quiz. For Name, reached = every quiz page visit; “Of starts” counts people who typed their name.</p>
+<section class="card"><h2>Step by step</h2><p class="sub">Reached = saw the screen. Completed = moved forward from it. Lost = reached but never completed. For the landing page, completed = opened the quiz. For the video page, completed = clicked into the video. For Name, reached = every quiz page visit; “Of starts” counts people who typed their name.</p>
 <div class="scroll"><table><thead><tr><th>Step</th><th class="n">Reached</th><th></th><th class="n">Of starts</th><th class="n">Completed</th><th class="n">Lost here</th></tr></thead><tbody>${funnelRows}</tbody></table></div></section>
 
 <div class="grid">
