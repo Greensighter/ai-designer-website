@@ -63,8 +63,22 @@
     </script>
     <!-- End Meta Pixel Code -->
     <script src="assets/js/track.js?v=2" defer></script>
-    <script>/* Keep the ad's utm tags when a visitor goes from this page to /quiz, so quiz stats know which ad they came from. */
-    (function () { try { var q = new URLSearchParams(location.search), o = {}; ['utm_source', 'utm_campaign', 'utm_content'].forEach(function (k) { o[k] = q.get(k) || ''; }); if (o.utm_source || o.utm_content) sessionStorage.setItem('q_utm', JSON.stringify(o)); } catch (e) {} })();</script>
+    <script>/* Landing page visit for /quiz-stats, plus the ad's utm tags carried into /quiz (same tab session). */
+    (function () {
+      try {
+        var q = new URLSearchParams(location.search), o = {};
+        ['utm_source', 'utm_campaign', 'utm_content'].forEach(function (k) { o[k] = q.get(k) || ''; });
+        if (o.utm_source || o.utm_content) sessionStorage.setItem('q_utm', JSON.stringify(o));
+        else o = JSON.parse(sessionStorage.getItem('q_utm') || 'null') || o;
+        if (!/(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.hostname)) return;
+        var sid = sessionStorage.getItem('q_sid');
+        if (!sid) { sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sessionStorage.setItem('q_sid', sid); }
+        if (sessionStorage.getItem('q_home')) return; /* one landing visit per tab session */
+        sessionStorage.setItem('q_home', '1');
+        var body = JSON.stringify({ sid: sid, type: 'view', step: 'home', utm_source: o.utm_source, utm_campaign: o.utm_campaign, utm_content: o.utm_content });
+        if (!(navigator.sendBeacon && navigator.sendBeacon('/api/qe', new Blob([body], { type: 'application/json' })))) fetch('/api/qe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true });
+      } catch (e) {}
+    })();</script>
 </head>
 <body>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1083937427973647&ev=PageView&noscript=1" /></noscript>

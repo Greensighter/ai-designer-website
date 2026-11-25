@@ -3,7 +3,7 @@
  * never lives in the repo. Data comes from the QUIZ_DB D1 database filled by /api/qe. */
 
 const STEPS = [
-  ['name', 'Name'], ['role', 'Role'], ['pain', 'Pains'], ['stats', 'Stat screen'], ['cost', 'Cost comparison'],
+  ['home', 'Landing page'], ['name', 'Name'], ['role', 'Role'], ['pain', 'Pains'], ['stats', 'Stat screen'], ['cost', 'Cost comparison'],
   ['future', 'How it works'], ['setup', 'Ticket tool'], ['devs', 'Developers'], ['email', 'Work email'], ['book', 'Calendar']
 ];
 const PAIN_LABELS = {
@@ -72,6 +72,7 @@ export async function onRequestGet({ request, env }) {
 
   const has = (s, t, st) => s.ev.has(`${t}:${st}`);
   const visits = sessions.filter((s) => has(s, 'view', 'name'));
+  const landing = sessions.filter((s) => has(s, 'view', 'home'));
   const started = sessions.filter((s) => has(s, 'start', 'name'));
   const N = started.length;
   const leads = sessions.filter((s) => has(s, 'lead', 'email'));
@@ -82,7 +83,9 @@ export async function onRequestGet({ request, env }) {
   // funnel
   const funnel = STEPS.map(([id, label]) => {
     const reached = sessions.filter((s) => has(s, 'view', id)).length;
-    const done = id === 'book' ? booked.length : sessions.filter((s) => has(s, 'complete', id)).length;
+    const done = id === 'book' ? booked.length
+      : id === 'home' ? sessions.filter((s) => has(s, 'view', 'home') && has(s, 'view', 'name')).length
+      : sessions.filter((s) => has(s, 'complete', id)).length;
     return { id, label, reached, done };
   });
 
@@ -106,8 +109,8 @@ export async function onRequestGet({ request, env }) {
   const group = (keyFn) => {
     const m = new Map();
     for (const s of sessions) {
-      const k = keyFn(s); const e = m.get(k) || { visits: 0, started: 0, role: 0, screened: 0, leads: 0, booked: 0 };
-      if (has(s, 'view', 'name')) e.visits++; if (has(s, 'start', 'name')) e.started++; if (has(s, 'complete', 'role')) e.role++;
+      const k = keyFn(s); const e = m.get(k) || { landing: 0, visits: 0, started: 0, role: 0, screened: 0, leads: 0, booked: 0 };
+      if (has(s, 'view', 'home')) e.landing++; if (has(s, 'view', 'name')) e.visits++; if (has(s, 'start', 'name')) e.started++; if (has(s, 'complete', 'role')) e.role++;
       if (has(s, 'view', 'nofit')) e.screened++; if (has(s, 'lead', 'email')) e.leads++; if (has(s, 'booked', 'book')) e.booked++;
       m.set(k, e);
     }
@@ -118,7 +121,7 @@ export async function onRequestGet({ request, env }) {
   const dayFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
   const byDay = [...group((s) => dayFmt.format(new Date(s.t0))).entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
 
-  const html = page({ r, adFilter, visits, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, noDevs, byAd, byDev, byDay, has });
+  const html = page({ r, adFilter, visits, landing, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, noDevs, byAd, byDev, byDay, has });
   return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } });
 }
 
@@ -141,7 +144,7 @@ function page(d) {
   const funnelRows = funnel.filter((f) => !EXPLAINERS.includes(f.id) || f.reached > 0).map((f, idx) => {
     const lost = f.reached - f.done;
     const note = f.id === 'stats' ? ' <span class="muted">(only if a non-cost pain was picked)</span>' : '';
-    return `<tr><td>${idx + 1}. ${esc(f.label)}${note}</td><td class="n">${f.reached}</td><td class="viz">${bar(f.reached, fmax)}</td><td class="n">${f.id === 'name' ? '–' : fmtPct(f.reached, N)}</td><td class="n">${f.done}</td><td class="n ${lost > 0 ? 'neg' : ''}">${f.reached ? lost + ' (' + pct(lost, f.reached) + '%)' : '–'}</td></tr>`;
+    return `<tr><td>${idx + 1}. ${esc(f.label)}${note}</td><td class="n">${f.reached}</td><td class="viz">${bar(f.reached, fmax)}</td><td class="n">${f.id === 'name' || f.id === 'home' ? '–' : fmtPct(f.reached, N)}</td><td class="n">${f.done}</td><td class="n ${lost > 0 ? 'neg' : ''}">${f.reached ? lost + ' (' + pct(lost, f.reached) + '%)' : '–'}</td></tr>`;
   }).join('');
 
   const ansTable = (t, labels = {}) => {
@@ -151,8 +154,8 @@ function page(d) {
       `<tr><td>${esc(labels[k] || k)}</td><td class="n">${v.n}</td><td class="viz">${bar(v.n, max, k === 'Designer / freelancer')}</td><td class="n">${fmtPct(v.n, t.total)}</td><td class="n">${v.leads}</td><td class="n">${v.booked}</td></tr>`).join('')}</tbody></table>`;
   };
 
-  const grpTable = (rows, first) => `<table><thead><tr><th>${first}</th><th class="n">Visits</th><th class="n">Started</th><th class="n">Answered role</th><th class="n">Designers out</th><th class="n">Leads</th><th class="n">Booked</th><th class="n">Start → lead</th></tr></thead><tbody>${rows.map(([k, v]) =>
-    `<tr><td>${esc(k)}</td><td class="n">${v.visits}</td><td class="n">${v.started}</td><td class="n">${v.role}</td><td class="n">${v.screened}</td><td class="n">${v.leads}</td><td class="n">${v.booked}</td><td class="n">${fmtPct(v.leads, v.started)}</td></tr>`).join('') || '<tr><td colspan="8" class="muted">No data yet.</td></tr>'}</tbody></table>`;
+  const grpTable = (rows, first) => `<table><thead><tr><th>${first}</th><th class="n">Landing</th><th class="n">Quiz visits</th><th class="n">Started</th><th class="n">Answered role</th><th class="n">Designers out</th><th class="n">Leads</th><th class="n">Booked</th><th class="n">Start → lead</th></tr></thead><tbody>${rows.map(([k, v]) =>
+    `<tr><td>${esc(k)}</td><td class="n">${v.landing}</td><td class="n">${v.visits}</td><td class="n">${v.started}</td><td class="n">${v.role}</td><td class="n">${v.screened}</td><td class="n">${v.leads}</td><td class="n">${v.booked}</td><td class="n">${fmtPct(v.leads, v.started)}</td></tr>`).join('') || '<tr><td colspan="9" class="muted">No data yet.</td></tr>'}</tbody></table>`;
 
   const furthest = (s) => {
     if (has(s, 'booked', 'book')) return 'Booked a call';
@@ -192,12 +195,13 @@ td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}tr:last
 .viz{width:30%;min-width:90px}.bar{display:block;height:10px;background:var(--track);border-radius:5px;overflow:hidden}.bar i{display:block;height:100%;background:var(--accent);border-radius:5px}.bar i.us{background:#c4c2bb}
 footer{color:var(--muted);font-size:12.5px;margin-top:20px}
 </style></head><body><div class="wrap">
-<header><h1>Quiz analytics<small>ai.greensighter.com/quiz · ${esc(RANGES[d.r])}${d.adFilter ? ' · ' + esc(d.adFilter) : ''} · times in Yerevan</small></h1>
+<header><h1>Quiz analytics<small>Homepage → quiz · ${esc(RANGES[d.r])}${d.adFilter ? ' · ' + esc(d.adFilter) : ''} · times in Yerevan</small></h1>
 <form class="filters" method="get">${Object.entries(RANGES).map(([k, v]) => `<a class="pill${k === d.r ? ' on' : ''}" href="${esc(qs({ r: k }))}">${v}</a>`).join('')}
 <input type="hidden" name="r" value="${esc(d.r)}"><select name="ad" onchange="this.form.submit()" aria-label="Filter by ad"><option value="">All traffic</option>${d.ads.map(([k, n]) => `<option value="${esc(k)}"${k === d.adFilter ? ' selected' : ''}>${esc(k)} (${n})</option>`).join('')}</select></form></header>
 
 <div class="kpis">
-${kpi('Quiz page visits', d.visits.length, 'opened /quiz')}
+${kpi('Landing page visits', d.landing.length, 'opened the homepage')}
+${kpi('Quiz page visits', d.visits.length, d.landing.length ? fmtPct(d.visits.length, d.landing.length) + ' of landing visits' : 'opened /quiz')}
 ${kpi('Started the quiz', N, fmtPct(N, d.visits.length) + ' of visits typed their name')}
 ${kpi('Answered role', funnel[1].done, fmtPct(funnel[1].done, N) + ' of starts')}
 ${kpi('Designers screened out', d.screened.length, fmtPct(d.screened.length, funnel[1].done) + ' of role answers')}
@@ -206,7 +210,7 @@ ${kpi('Leads (work email)', d.leads.length, fmtPct(d.leads.length, N) + ' of sta
 ${kpi('Booked calls', d.booked.length, fmtPct(d.booked.length, d.leads.length) + ' of leads')}
 </div>
 
-<section class="card"><h2>Step by step</h2><p class="sub">Reached = saw the screen. Completed = moved forward from it. Lost = reached but never completed. Step 1 “reached” is every page visit; “Of starts” counts people who typed their name.</p>
+<section class="card"><h2>Step by step</h2><p class="sub">Reached = saw the screen. Completed = moved forward from it. Lost = reached but never completed. For the landing page, completed = opened the quiz. For Name, reached = every quiz page visit; “Of starts” counts people who typed their name.</p>
 <div class="scroll"><table><thead><tr><th>Step</th><th class="n">Reached</th><th></th><th class="n">Of starts</th><th class="n">Completed</th><th class="n">Lost here</th></tr></thead><tbody>${funnelRows}</tbody></table></div></section>
 
 <div class="grid">
