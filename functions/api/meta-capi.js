@@ -6,7 +6,7 @@
 //   META_TEST_EVENT_CODE   optional, only while testing in Events Manager
 const PIXEL_ID = '1083937427973647';
 const API = `https://graph.facebook.com/v21.0/${PIXEL_ID}/events`;
-const ALLOWED = new Set(['PageView', 'Lead', 'Schedule']);
+const ALLOWED = new Set(['PageView', 'Lead', 'Schedule', 'EngagedVisit']);
 
 async function sha(v) {
   const data = new TextEncoder().encode(String(v).trim().toLowerCase());

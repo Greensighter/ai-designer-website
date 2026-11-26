@@ -78,6 +78,22 @@
         if (!/(^|\.)greensighter\.com$|\.pages\.dev$/.test(location.hostname)) return;
         var sid = sessionStorage.getItem('q_sid');
         if (!sid) { sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sessionStorage.setItem('q_sid', sid); }
+        /* Engaged visit: 10 s with the page visible, or scrolled past the first screen. Once per tab session.
+           Goes to /quiz-stats and to Meta as the custom event EngagedVisit (to optimize ads for later). */
+        if (!sessionStorage.getItem('q_engaged')) {
+          var shown = 0, last = Date.now(), done = false;
+          var engage = function (how) {
+            if (done) return; done = true; sessionStorage.setItem('q_engaged', '1');
+            var eb = JSON.stringify({ sid: sid, type: 'engaged', step: 'home', value: how, utm_source: o.utm_source, utm_campaign: o.utm_campaign, utm_content: o.utm_content });
+            if (!(navigator.sendBeacon && navigator.sendBeacon('/api/qe', new Blob([eb], { type: 'application/json' })))) fetch('/api/qe', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: eb, keepalive: true });
+            if (window.gsTrack) gsTrack('EngagedVisit', null, { how: how, utm_content: o.utm_content || '' });
+          };
+          var tick = setInterval(function () {
+            var now = Date.now(); if (document.visibilityState === 'visible') shown += now - last; last = now;
+            if (shown >= 10000) { clearInterval(tick); engage('time'); }
+          }, 1000);
+          window.addEventListener('scroll', function onS() { if (window.scrollY > window.innerHeight) { window.removeEventListener('scroll', onS); clearInterval(tick); engage('scroll'); } }, { passive: true });
+        }
         if (sessionStorage.getItem('q_home')) return; /* one landing visit per tab session */
         sessionStorage.setItem('q_home', '1');
         var body = JSON.stringify({ sid: sid, type: 'view', step: 'home', utm_source: o.utm_source, utm_campaign: o.utm_campaign, utm_content: o.utm_content });

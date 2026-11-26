@@ -73,6 +73,7 @@ export async function onRequestGet({ request, env }) {
   const has = (s, t, st) => s.ev.has(`${t}:${st}`);
   const visits = sessions.filter((s) => has(s, 'view', 'name'));
   const landing = sessions.filter((s) => has(s, 'view', 'home'));
+  const engaged = sessions.filter((s) => has(s, 'engaged', 'home'));
   const started = sessions.filter((s) => has(s, 'start', 'name'));
   const N = started.length;
   const leads = sessions.filter((s) => has(s, 'lead', 'email'));
@@ -109,8 +110,8 @@ export async function onRequestGet({ request, env }) {
   const group = (keyFn) => {
     const m = new Map();
     for (const s of sessions) {
-      const k = keyFn(s); const e = m.get(k) || { landing: 0, visits: 0, started: 0, role: 0, screened: 0, leads: 0, booked: 0 };
-      if (has(s, 'view', 'home')) e.landing++; if (has(s, 'view', 'name')) e.visits++; if (has(s, 'start', 'name')) e.started++; if (has(s, 'complete', 'role')) e.role++;
+      const k = keyFn(s); const e = m.get(k) || { engaged: 0, landing: 0, visits: 0, started: 0, role: 0, screened: 0, leads: 0, booked: 0 };
+      if (has(s, 'view', 'home')) e.landing++; if (has(s, 'engaged', 'home')) e.engaged++; if (has(s, 'view', 'name')) e.visits++; if (has(s, 'start', 'name')) e.started++; if (has(s, 'complete', 'role')) e.role++;
       if (has(s, 'view', 'nofit')) e.screened++; if (has(s, 'lead', 'email')) e.leads++; if (has(s, 'booked', 'book')) e.booked++;
       m.set(k, e);
     }
@@ -121,7 +122,7 @@ export async function onRequestGet({ request, env }) {
   const dayFmt = new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' });
   const byDay = [...group((s) => dayFmt.format(new Date(s.t0))).entries()].sort((a, b) => (a[0] < b[0] ? 1 : -1));
 
-  const html = page({ r, adFilter, visits, landing, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, noDevs, byAd, byDev, byDay, has });
+  const html = page({ r, adFilter, visits, landing, engaged, ads: [...adsAll.entries()].sort((a, b) => b[1] - a[1]), N, sessions, leads, booked, screened, funnel, roles, pains, tools, devs, noDevs, byAd, byDev, byDay, has });
   return new Response(html, { headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' } });
 }
 
@@ -154,8 +155,8 @@ function page(d) {
       `<tr><td>${esc(labels[k] || k)}</td><td class="n">${v.n}</td><td class="viz">${bar(v.n, max, k === 'Designer / freelancer')}</td><td class="n">${fmtPct(v.n, t.total)}</td><td class="n">${v.leads}</td><td class="n">${v.booked}</td></tr>`).join('')}</tbody></table>`;
   };
 
-  const grpTable = (rows, first) => `<table><thead><tr><th>${first}</th><th class="n">Landing</th><th class="n">Quiz visits</th><th class="n">Started</th><th class="n">Answered role</th><th class="n">Designers out</th><th class="n">Leads</th><th class="n">Booked</th><th class="n">Start → lead</th></tr></thead><tbody>${rows.map(([k, v]) =>
-    `<tr><td>${esc(k)}</td><td class="n">${v.landing}</td><td class="n">${v.visits}</td><td class="n">${v.started}</td><td class="n">${v.role}</td><td class="n">${v.screened}</td><td class="n">${v.leads}</td><td class="n">${v.booked}</td><td class="n">${fmtPct(v.leads, v.started)}</td></tr>`).join('') || '<tr><td colspan="9" class="muted">No data yet.</td></tr>'}</tbody></table>`;
+  const grpTable = (rows, first) => `<table><thead><tr><th>${first}</th><th class="n">Landing</th><th class="n">Engaged</th><th class="n">Quiz visits</th><th class="n">Started</th><th class="n">Answered role</th><th class="n">Designers out</th><th class="n">Leads</th><th class="n">Booked</th><th class="n">Start → lead</th></tr></thead><tbody>${rows.map(([k, v]) =>
+    `<tr><td>${esc(k)}</td><td class="n">${v.landing}</td><td class="n">${v.engaged}</td><td class="n">${v.visits}</td><td class="n">${v.started}</td><td class="n">${v.role}</td><td class="n">${v.screened}</td><td class="n">${v.leads}</td><td class="n">${v.booked}</td><td class="n">${fmtPct(v.leads, v.started)}</td></tr>`).join('') || '<tr><td colspan="10" class="muted">No data yet.</td></tr>'}</tbody></table>`;
 
   const furthest = (s) => {
     if (has(s, 'complete', 'video')) return 'Booked, clicked the video';
@@ -203,6 +204,7 @@ footer{color:var(--muted);font-size:12.5px;margin-top:20px}
 
 <div class="kpis">
 ${kpi('Landing page visits', d.landing.length, 'opened the homepage')}
+${kpi('Engaged landing visits', d.engaged.length, fmtPct(d.engaged.length, d.landing.length) + ' stayed 10s+ or scrolled')}
 ${kpi('Quiz page visits', d.visits.length, d.landing.length ? fmtPct(d.visits.length, d.landing.length) + ' of landing visits' : 'opened /quiz')}
 ${kpi('Started the quiz', N, fmtPct(N, d.visits.length) + ' of visits typed their name')}
 ${kpi('Answered role', funnel[1].done, fmtPct(funnel[1].done, N) + ' of starts')}
