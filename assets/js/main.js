@@ -432,7 +432,29 @@ document.querySelectorAll('a[href="/demo"]').forEach(function (a) {
     var p = v.play(); if (p && p.catch) p.catch(function () {});
     wrap.classList.add('is-playing');
     try { if (window.clarity) window.clarity('event', 'hero_video_play'); } catch (e) {}
+    logWatch();
   });
+
+  /* Mobile "Watch Vlad do a ticket" button: bring the video into view and play it with sound */
+  var watch = document.querySelector('[data-watch]');
+  if (watch) watch.addEventListener('click', function () {
+    try { if (window.clarity) window.clarity('event', 'hero_watch_button'); } catch (e) {}
+    wrap.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    btn.click();
+  });
+
+  /* Count the first video play per visit in quiz stats (type "watch" on the landing page) */
+  function logWatch() {
+    try {
+      if (sessionStorage.getItem('q_watch')) return;
+      sessionStorage.setItem('q_watch', '1');
+      var sid = sessionStorage.getItem('q_sid'); if (!sid) return;
+      var o = {}; try { o = JSON.parse(sessionStorage.getItem('q_utm') || '{}'); } catch (e) {}
+      var body = JSON.stringify({ sid: sid, type: 'watch', step: 'home', utm_source: o.utm_source, utm_campaign: o.utm_campaign, utm_content: o.utm_content });
+      if (navigator.sendBeacon) navigator.sendBeacon('/api/qe', new Blob([body], { type: 'application/json' }));
+      else fetch('/api/qe', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'application/json' } });
+    } catch (e) {}
+  }
   v.addEventListener('ended', function () {
     v.controls = false; v.muted = true; v.loop = true;
     wrap.classList.remove('is-playing');

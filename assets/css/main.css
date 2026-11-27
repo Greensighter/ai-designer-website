@@ -606,3 +606,19 @@ html, body { overflow-x: clip; }
 .final__copy { display: flex; flex-direction: column; align-items: center; gap: 16px; }
 .final__sub { margin: 0; font-size: 18px; line-height: 1.5; color: rgba(255,255,255,.85); text-wrap: balance; }
 @media (max-width: 720px) { .final__sub { font-size: 16px; } }
+
+/* Mobile hero: show the product video right under the headline, then the actions, then the details.
+   On mobile, Meta visitors read the first screen for ~8s and leave, so the first screen shows the work, not just words. */
+.hero-watch { display: none; }
+@media (max-width: 720px) {
+  .hero-wrap { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 32px; padding-bottom: 40px; text-align: center; }
+  .hero-wrap .hero, .hero-wrap .hero__top { display: contents; }
+  .hero__head { order: 1; }
+  .hero-wrap .hero-video { order: 2; margin-top: 4px; }
+  .hero-wrap .cta-slot { order: 3; margin-top: 8px; }
+  .hero-watch { order: 4; }
+  .hero-wrap .sub { order: 5; margin-top: 24px; }
+  .hero-wrap .hero__desc { order: 6; }
+  .hero-watch { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 16px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--black); font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .hero-watch__ic { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--black); color: #fff; padding-left: 2px; }
+}
